@@ -1,0 +1,144 @@
+
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+
+const Registration = () => {
+  const { toast } = useToast();
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Registration submitted!",
+      description: "We'll contact you soon with more details.",
+      duration: 5000,
+    });
+  };
+
+  return (
+    <section id="register" className="section-padding relative overflow-hidden">
+      <div 
+        className="absolute inset-0 z-0" 
+        style={{
+          backgroundImage: "url(https://images.unsplash.com/photo-1560439514-4e9645039924?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.2
+        }}
+      ></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="reveal">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Register Your <span className="gold-gradient">Interest</span>
+              </h2>
+              <p className="text-white/80 mb-6">
+                Limited spots are available for our exclusive events. Register your interest now to be 
+                notified when new events are announced or when spots become available.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <div className="bg-gold/20 p-2 rounded-full">
+                    <svg className="h-5 w-5 text-gold" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="text-white/90">First access to event tickets</p>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="bg-gold/20 p-2 rounded-full">
+                    <svg className="h-5 w-5 text-gold" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="text-white/90">Exclusive early bird discounts</p>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="bg-gold/20 p-2 rounded-full">
+                    <svg className="h-5 w-5 text-gold" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="text-white/90">Special VIP event invitations</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-dark-light p-8 rounded-xl shadow-lg border border-dark-lighter reveal">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input 
+                    id="name" 
+                    placeholder="Your name" 
+                    required 
+                    className="bg-dark border-dark-lighter focus:border-gold"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="Your email" 
+                    required 
+                    className="bg-dark border-dark-lighter focus:border-gold"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="location">Preferred Location</Label>
+                  <Select>
+                    <SelectTrigger className="bg-dark border-dark-lighter focus:border-gold">
+                      <SelectValue placeholder="Select a location" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-dark-light">
+                      <SelectItem value="london">London</SelectItem>
+                      <SelectItem value="manchester">Manchester</SelectItem>
+                      <SelectItem value="newyork">New York</SelectItem>
+                      <SelectItem value="losangeles">Los Angeles</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="event">Event Type</Label>
+                  <Select>
+                    <SelectTrigger className="bg-dark border-dark-lighter focus:border-gold">
+                      <SelectValue placeholder="Select an event type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-dark-light">
+                      <SelectItem value="meetgreet">Meet & Greet</SelectItem>
+                      <SelectItem value="dinner">VIP Dinner</SelectItem>
+                      <SelectItem value="workshop">Workshop</SelectItem>
+                      <SelectItem value="qa">Q&A Session</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gold hover:bg-gold-dark text-dark font-medium"
+                >
+                  Register Interest
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Registration;
