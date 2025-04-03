@@ -1,7 +1,17 @@
 
 import React from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const Gallery = () => {
+  const isMobile = useIsMobile();
+  
   const testimonials = [
     {
       id: 1,
@@ -49,20 +59,42 @@ const Gallery = () => {
     },
   ];
 
+  const renderTestimonial = (testimonial) => (
+    <div 
+      key={testimonial.id} 
+      className="bg-dark p-4 md:p-6 rounded-xl border border-dark-lighter hover:border-gold/20 transition-all duration-300 h-full"
+    >
+      <div className="flex items-center mb-4">
+        <div className="h-10 w-10 md:h-12 md:w-12 rounded-full overflow-hidden mr-3 md:mr-4 flex-shrink-0">
+          <img 
+            src={testimonial.image} 
+            alt={testimonial.name} 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div>
+          <h4 className="font-semibold text-sm md:text-base">{testimonial.name}</h4>
+          <p className="text-xs md:text-sm text-white/60">{testimonial.position}</p>
+        </div>
+      </div>
+      <p className="text-white/80 italic text-sm md:text-base">"{testimonial.quote}"</p>
+    </div>
+  );
+
   return (
-    <section id="gallery" className="section-padding bg-dark-light">
+    <section id="gallery" className="section-padding bg-dark-light py-12 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 reveal">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="text-center mb-8 md:mb-16 reveal">
+          <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
             Event <span className="gold-gradient">Gallery</span>
           </h2>
-          <p className="text-white/70 max-w-2xl mx-auto">
+          <p className="text-white/70 max-w-2xl mx-auto text-sm md:text-base">
             Take a look at our past events and hear from those who've experienced 
             the exclusive opportunity to meet Steven in person.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-8 md:mb-16">
           {eventImages.map((image) => (
             <div 
               key={image.id} 
@@ -77,35 +109,33 @@ const Gallery = () => {
           ))}
         </div>
 
-        <div className="text-center mb-12 reveal">
-          <h3 className="text-2xl md:text-3xl font-bold mb-2">
+        <div className="text-center mb-6 md:mb-12 reveal">
+          <h3 className="text-xl md:text-3xl font-bold mb-2">
             What People <span className="gold-gradient">Say</span>
           </h3>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
-            <div 
-              key={testimonial.id} 
-              className="bg-dark p-6 rounded-xl border border-dark-lighter hover:border-gold/20 transition-all duration-300 reveal"
-            >
-              <div className="flex items-center mb-4">
-                <div className="h-12 w-12 rounded-full overflow-hidden mr-4">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h4 className="font-semibold">{testimonial.name}</h4>
-                  <p className="text-sm text-white/60">{testimonial.position}</p>
-                </div>
+        {isMobile ? (
+          <div className="px-4 reveal">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {testimonials.map((testimonial) => (
+                  <CarouselItem key={testimonial.id} className="pt-2 pb-8">
+                    {renderTestimonial(testimonial)}
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex justify-center gap-2 mt-2">
+                <CarouselPrevious className="relative static transform-none mx-1" />
+                <CarouselNext className="relative static transform-none mx-1" />
               </div>
-              <p className="text-white/80 italic">"{testimonial.quote}"</p>
-            </div>
-          ))}
-        </div>
+            </Carousel>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-8 reveal">
+            {testimonials.map(renderTestimonial)}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -3,8 +3,18 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, MapPin } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const Events = () => {
+  const isMobile = useIsMobile();
+  
   const upcomingEvents = [
     {
       id: 1,
@@ -38,75 +48,95 @@ const Events = () => {
     },
   ];
 
+  const renderEventCard = (event) => (
+    <Card 
+      key={event.id} 
+      className={`bg-dark-light border-dark-lighter hover:border-gold/30 transition-all duration-300 h-full ${
+        event.featured ? "ring-2 ring-gold/50" : ""
+      }`}
+    >
+      <CardHeader>
+        {event.featured && (
+          <div className="text-xs uppercase tracking-wide text-gold mb-2 font-medium">
+            Featured Event
+          </div>
+        )}
+        <CardTitle className="text-lg md:text-xl font-bold">{event.title}</CardTitle>
+        <CardDescription className="text-white/60">
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+            {event.date}
+          </div>
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex items-center text-white/70">
+          <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span>{event.time}</span>
+        </div>
+        <div className="flex items-center text-white/70">
+          <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span>{event.location}</span>
+        </div>
+        <div className="flex items-center text-white/70">
+          <User className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span>{event.spots}</span>
+        </div>
+        <div className="py-3">
+          <span className="text-xl md:text-2xl font-bold text-gold">{event.price}</span>
+          <span className="text-white/60 text-sm ml-1">per person</span>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button 
+          className={`w-full ${
+            event.featured 
+              ? "bg-gold hover:bg-gold-dark text-dark" 
+              : "bg-dark-lighter hover:bg-dark-light text-white"
+          }`}
+        >
+          Book Now
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+
   return (
-    <section id="events" className="section-padding bg-dark">
+    <section id="events" className="section-padding bg-dark py-12 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 reveal">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="text-center mb-8 md:mb-16 reveal">
+          <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
             Upcoming <span className="gold-gradient">Events</span>
           </h2>
-          <p className="text-white/70 max-w-2xl mx-auto">
+          <p className="text-white/70 max-w-2xl mx-auto text-sm md:text-base">
             Book your spot at one of our exclusive meet & greet events with Steven Bartlett.
             Limited spaces available for these intimate gatherings.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {upcomingEvents.map((event) => (
-            <Card 
-              key={event.id} 
-              className={`bg-dark-light border-dark-lighter hover:border-gold/30 transition-all duration-300 reveal ${
-                event.featured ? "ring-2 ring-gold/50" : ""
-              }`}
-            >
-              <CardHeader>
-                {event.featured && (
-                  <div className="text-xs uppercase tracking-wide text-gold mb-2 font-medium">
-                    Featured Event
-                  </div>
-                )}
-                <CardTitle className="text-xl font-bold">{event.title}</CardTitle>
-                <CardDescription className="text-white/60">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {event.date}
-                  </div>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center text-white/70">
-                  <Clock className="h-4 w-4 mr-2" />
-                  <span>{event.time}</span>
-                </div>
-                <div className="flex items-center text-white/70">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  <span>{event.location}</span>
-                </div>
-                <div className="flex items-center text-white/70">
-                  <User className="h-4 w-4 mr-2" />
-                  <span>{event.spots}</span>
-                </div>
-                <div className="py-3">
-                  <span className="text-2xl font-bold text-gold">{event.price}</span>
-                  <span className="text-white/60 text-sm ml-1">per person</span>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  className={`w-full ${
-                    event.featured 
-                      ? "bg-gold hover:bg-gold-dark text-dark" 
-                      : "bg-dark-lighter hover:bg-dark-light text-white"
-                  }`}
-                >
-                  Book Now
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        {isMobile ? (
+          <div className="px-4 reveal">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {upcomingEvents.map((event) => (
+                  <CarouselItem key={event.id}>
+                    {renderEventCard(event)}
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex justify-center gap-2 mt-4">
+                <CarouselPrevious className="relative static transform-none mx-1" />
+                <CarouselNext className="relative static transform-none mx-1" />
+              </div>
+            </Carousel>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-6 reveal">
+            {upcomingEvents.map(renderEventCard)}
+          </div>
+        )}
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-8 md:mt-12">
           <Button variant="outline" className="border-gold/50 text-gold hover:bg-gold/10">
             View All Events
           </Button>

@@ -8,8 +8,11 @@ import Gallery from "../components/Gallery";
 import FAQ from "../components/FAQ";
 import Registration from "../components/Registration";
 import Footer from "../components/Footer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
+  const isMobile = useIsMobile();
+  
   useEffect(() => {
     const handleReveal = () => {
       const reveals = document.querySelectorAll(".reveal");
@@ -17,7 +20,7 @@ const Index = () => {
       reveals.forEach((element) => {
         const windowHeight = window.innerHeight;
         const elementTop = element.getBoundingClientRect().top;
-        const elementVisible = 150;
+        const elementVisible = isMobile ? 50 : 150;
         
         if (elementTop < windowHeight - elementVisible) {
           element.classList.add("active");
@@ -30,7 +33,7 @@ const Index = () => {
     setTimeout(handleReveal, 100);
     
     return () => window.removeEventListener("scroll", handleReveal);
-  }, []);
+  }, [isMobile]);
 
   return (
     <div className="bg-dark text-white min-h-screen">

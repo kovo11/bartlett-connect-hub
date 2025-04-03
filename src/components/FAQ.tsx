@@ -36,37 +36,37 @@ const FAQ = () => {
   ];
 
   return (
-    <section id="faq" className="section-padding bg-dark">
+    <section id="faq" className="section-padding bg-dark py-12 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 reveal">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="text-center mb-8 md:mb-16 reveal">
+          <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
             Frequently <span className="gold-gradient">Asked Questions</span>
           </h2>
-          <p className="text-white/70 max-w-2xl mx-auto">
+          <p className="text-white/70 max-w-2xl mx-auto text-sm md:text-base">
             Everything you need to know about our exclusive meet & greet events with Steven.
           </p>
         </div>
 
         <div className="max-w-3xl mx-auto reveal">
-          <Accordion type="single" collapsible className="space-y-4">
+          <Accordion type="single" collapsible className="space-y-3 md:space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem 
                 key={index} 
                 value={`item-${index}`}
-                className="bg-dark-light border border-dark-lighter rounded-lg px-6"
+                className="bg-dark-light border border-dark-lighter rounded-lg px-3 md:px-6"
               >
-                <AccordionTrigger className="text-lg font-medium py-4 hover:text-gold">
+                <AccordionTrigger className="text-base md:text-lg font-medium py-3 md:py-4 hover:text-gold text-left">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-white/80 pb-4">
+                <AccordionContent className="text-white/80 pb-3 md:pb-4 text-sm md:text-base">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
 
-          <div className="mt-12 text-center">
-            <p className="text-white/70">
+          <div className="mt-8 md:mt-12 text-center">
+            <p className="text-white/70 text-sm md:text-base">
               Still have questions? Contact us at{" "}
               <a 
                 href="mailto:events@stevenbartlett.com" 
