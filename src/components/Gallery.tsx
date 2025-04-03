@@ -49,13 +49,13 @@ const Gallery = () => {
     },
     {
       id: 3,
-      src: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
-      alt: "Conference venue",
+      src: "/lovable-uploads/502e27df-b10f-469b-9614-be27905ee801.png",
+      alt: "VIP dinner setting with Steven Bartlett",
     },
     {
       id: 4,
-      src: "https://images.unsplash.com/photo-1544928147-79a2dbc1f669?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1548&q=80",
-      alt: "VIP dinner setting",
+      src: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
+      alt: "Conference venue",
     },
   ];
 
