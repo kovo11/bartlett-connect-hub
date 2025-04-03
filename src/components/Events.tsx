@@ -25,7 +25,7 @@ const allEvents = [
   {
     id: 1,
     title: "London VIP Meet & Greet",
-    date: "June 15, 2024",
+    date: "January 15, 2025",
     time: "6:00 PM - 9:00 PM",
     location: "The Savoy, London",
     spots: "10 spots left",
@@ -35,7 +35,7 @@ const allEvents = [
   {
     id: 2,
     title: "Manchester Exclusive Dinner",
-    date: "July 23, 2024",
+    date: "February 10, 2025",
     time: "7:00 PM - 10:30 PM",
     location: "The Ivy, Manchester",
     spots: "5 spots left",
@@ -45,7 +45,7 @@ const allEvents = [
   {
     id: 3,
     title: "New York CEO Breakfast",
-    date: "August 12, 2024",
+    date: "March 5, 2025",
     time: "8:30 AM - 11:00 AM",
     location: "The Plaza Hotel, NYC",
     spots: "15 spots left",
@@ -55,7 +55,7 @@ const allEvents = [
   {
     id: 4,
     title: "Dubai Business Masterclass",
-    date: "September 5, 2024",
+    date: "March 25, 2025",
     time: "10:00 AM - 2:00 PM",
     location: "Burj Al Arab, Dubai",
     spots: "8 spots left",
@@ -65,7 +65,7 @@ const allEvents = [
   {
     id: 5,
     title: "Paris Networking Evening",
-    date: "October 18, 2024",
+    date: "April 12, 2025",
     time: "7:00 PM - 10:00 PM",
     location: "Four Seasons Hotel George V, Paris",
     spots: "12 spots left",
@@ -75,7 +75,7 @@ const allEvents = [
   {
     id: 6,
     title: "Berlin Entrepreneurship Workshop",
-    date: "November 9, 2024",
+    date: "May 8, 2025",
     time: "9:00 AM - 4:00 PM",
     location: "Hotel Adlon Kempinski, Berlin",
     spots: "20 spots left",
