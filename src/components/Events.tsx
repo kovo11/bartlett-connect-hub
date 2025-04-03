@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, MapPin } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,9 +11,19 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import BookingForm from "./BookingForm";
 
 const Events = () => {
   const isMobile = useIsMobile();
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   
   const upcomingEvents = [
     {
@@ -47,6 +57,15 @@ const Events = () => {
       featured: false,
     },
   ];
+
+  const handleBookNow = (event) => {
+    setSelectedEvent(event);
+    setBookingDialogOpen(true);
+  };
+
+  const handleBookingSuccess = () => {
+    setBookingDialogOpen(false);
+  };
 
   const renderEventCard = (event) => (
     <Card 
@@ -94,6 +113,7 @@ const Events = () => {
               ? "bg-gold hover:bg-gold-dark text-dark" 
               : "bg-dark-lighter hover:bg-dark-light text-white"
           }`}
+          onClick={() => handleBookNow(event)}
         >
           Book Now
         </Button>
@@ -141,6 +161,29 @@ const Events = () => {
             View All Events
           </Button>
         </div>
+
+        {/* Booking Dialog */}
+        <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
+          <DialogContent className="max-w-3xl bg-dark border-dark-lighter text-white max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl md:text-2xl">Book Your Spot</DialogTitle>
+              <DialogDescription className="text-white/70">
+                Fill out the form below to register your interest for this event.
+              </DialogDescription>
+            </DialogHeader>
+            
+            {selectedEvent && (
+              <BookingForm 
+                eventTitle={selectedEvent.title}
+                eventPrice={selectedEvent.price}
+                eventLocation={selectedEvent.location}
+                eventDate={selectedEvent.date}
+                eventTime={selectedEvent.time}
+                onSubmitSuccess={handleBookingSuccess}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
