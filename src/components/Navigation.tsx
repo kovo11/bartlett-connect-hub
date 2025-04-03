@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -9,11 +8,78 @@ import {
   X
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import BookingForm from "./BookingForm";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // All events data shared with the Events component
+  const allEvents = [
+    {
+      id: 1,
+      title: "London VIP Meet & Greet",
+      date: "June 15, 2024",
+      time: "6:00 PM - 9:00 PM",
+      location: "The Savoy, London",
+      spots: "10 spots left",
+      price: "£299",
+      featured: true,
+    },
+    {
+      id: 2,
+      title: "Manchester Exclusive Dinner",
+      date: "July 23, 2024",
+      time: "7:00 PM - 10:30 PM",
+      location: "The Ivy, Manchester",
+      spots: "5 spots left",
+      price: "£399",
+      featured: false,
+    },
+    {
+      id: 3,
+      title: "New York CEO Breakfast",
+      date: "August 12, 2024",
+      time: "8:30 AM - 11:00 AM",
+      location: "The Plaza Hotel, NYC",
+      spots: "15 spots left",
+      price: "$499",
+      featured: false,
+    },
+    {
+      id: 4,
+      title: "Dubai Business Masterclass",
+      date: "September 5, 2024",
+      time: "10:00 AM - 2:00 PM",
+      location: "Burj Al Arab, Dubai",
+      spots: "8 spots left",
+      price: "$599",
+      featured: false,
+    },
+    {
+      id: 5,
+      title: "Paris Networking Evening",
+      date: "October 18, 2024",
+      time: "7:00 PM - 10:00 PM",
+      location: "Four Seasons Hotel George V, Paris",
+      spots: "12 spots left",
+      price: "€349",
+      featured: false,
+    },
+    {
+      id: 6,
+      title: "Berlin Entrepreneurship Workshop",
+      date: "November 9, 2024",
+      time: "9:00 AM - 4:00 PM",
+      location: "Hotel Adlon Kempinski, Berlin",
+      spots: "20 spots left",
+      price: "€299",
+      featured: false,
+    },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +102,16 @@ const Navigation = () => {
     } else {
       document.body.style.overflow = 'auto';
     }
+  };
+
+  const handleBookNow = () => {
+    setIsMobileMenuOpen(false);
+    document.body.style.overflow = 'auto';
+    setBookingDialogOpen(true);
+  };
+
+  const handleBookingSuccess = () => {
+    setBookingDialogOpen(false);
   };
 
   const menuItems = [
@@ -90,7 +166,10 @@ const Navigation = () => {
                 </a>
               ))}
             </div>
-            <Button className="bg-gold hover:bg-gold-dark text-dark font-medium">
+            <Button 
+              className="bg-gold hover:bg-gold-dark text-dark font-medium"
+              onClick={handleBookNow}
+            >
               Book Now
             </Button>
           </div>
@@ -141,13 +220,37 @@ const Navigation = () => {
             </div>
             <Button 
               className="bg-gold hover:bg-gold-dark text-dark font-medium w-full"
-              onClick={toggleMobileMenu}
+              onClick={handleBookNow}
             >
               Book Now
             </Button>
           </div>
         </div>
       )}
+
+      {/* Booking Dialog */}
+      <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
+        <DialogContent className="max-w-3xl bg-dark border-dark-lighter text-white max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl md:text-2xl">Book Your Spot</DialogTitle>
+            <DialogDescription className="text-white/70">
+              Choose an event and book your spot
+            </DialogDescription>
+          </DialogHeader>
+          
+          <BookingForm 
+            availableEvents={allEvents.map(event => ({
+              id: event.id,
+              title: event.title, 
+              date: event.date,
+              location: event.location,
+              price: event.price,
+              time: event.time
+            }))}
+            onSubmitSuccess={handleBookingSuccess}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

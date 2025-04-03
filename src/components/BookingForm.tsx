@@ -26,6 +26,13 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: "Full name is required" }),
@@ -37,16 +44,26 @@ const formSchema = z.object({
   dietaryRequirements: z.string().optional(),
   questions: z.string().optional(),
   marketingConsent: z.boolean().optional(),
+  selectedEventId: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 interface BookingFormProps {
-  eventTitle: string;
-  eventPrice: string;
-  eventLocation: string;
-  eventDate: string;
-  eventTime: string;
+  eventTitle?: string;
+  eventPrice?: string;
+  eventLocation?: string;
+  eventDate?: string;
+  eventTime?: string;
+  eventId?: number | string;
+  availableEvents?: Array<{
+    id: number;
+    title: string;
+    date: string;
+    location: string;
+    price: string;
+    time: string;
+  }>;
   onSubmitSuccess: () => void;
 }
 
@@ -56,6 +73,8 @@ const BookingForm = ({
   eventLocation,
   eventDate,
   eventTime,
+  eventId,
+  availableEvents = [],
   onSubmitSuccess
 }: BookingFormProps) => {
   const { toast } = useToast();
@@ -71,13 +90,14 @@ const BookingForm = ({
       dietaryRequirements: "",
       questions: "",
       marketingConsent: false,
+      selectedEventId: eventId?.toString() || "",
     },
   });
 
   // Generate available dates (for demonstration, using dates around the event date)
-  const getAvailableDates = () => {
+  const getAvailableDates = (date?: string) => {
     const today = new Date();
-    const eventDateObj = new Date(eventDate);
+    const eventDateObj = date ? new Date(date) : new Date();
     const startDate = new Date();
     startDate.setDate(Math.max(today.getDate(), eventDateObj.getDate() - 7));
     const endDate = new Date(eventDateObj);
@@ -89,14 +109,45 @@ const BookingForm = ({
     };
   };
 
+  // If event is selected from dropdown, update form
+  React.useEffect(() => {
+    const selectedEventId = form.watch("selectedEventId");
+    if (selectedEventId && availableEvents.length > 0) {
+      const selectedEvent = availableEvents.find(e => e.id.toString() === selectedEventId);
+      if (selectedEvent) {
+        // No need to set values here, we'll just use the selected event for display
+        form.setValue("selectedDate", new Date());
+      }
+    }
+  }, [form.watch("selectedEventId"), availableEvents]);
+
   const onSubmit = async (data: FormValues) => {
     console.log("Form submitted:", data);
     
+    // Determine which event details to use
+    let finalEventTitle = eventTitle;
+    let finalEventPrice = eventPrice;
+    let finalEventLocation = eventLocation;
+    let finalEventDate = eventDate;
+    let finalEventTime = eventTime;
+
+    // If the user selected an event from dropdown
+    if (data.selectedEventId && availableEvents.length > 0) {
+      const selectedEvent = availableEvents.find(e => e.id.toString() === data.selectedEventId);
+      if (selectedEvent) {
+        finalEventTitle = selectedEvent.title;
+        finalEventPrice = selectedEvent.price;
+        finalEventLocation = selectedEvent.location;
+        finalEventDate = selectedEvent.date;
+        finalEventTime = selectedEvent.time;
+      }
+    }
+    
     try {
       // Email content construction
-      const emailSubject = `New Registration for ${eventTitle}`;
+      const emailSubject = `New Registration for ${finalEventTitle || 'Upcoming Event'}`;
       const emailBody = `
-        New registration for ${eventTitle}:
+        New registration for ${finalEventTitle || 'Upcoming Event'}:
         
         Name: ${data.fullName}
         Email: ${data.email}
@@ -109,15 +160,15 @@ const BookingForm = ({
         Marketing Consent: ${data.marketingConsent ? "Yes" : "No"}
         
         Event Details:
-        Title: ${eventTitle}
-        Price: ${eventPrice}
-        Location: ${eventLocation}
-        Date: ${eventDate}
-        Time: ${eventTime}
+        Title: ${finalEventTitle || "No specific event selected"}
+        Price: ${finalEventPrice || "N/A"}
+        Location: ${finalEventLocation || "N/A"}
+        Date: ${finalEventDate || "N/A"}
+        Time: ${finalEventTime || "N/A"}
       `;
       
       // Email sending via mailto (client-side approach)
-      const mailtoLink = `mailto:nurudeeny17@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+      const mailtoLink = `mailto:support@stevenbartlett.info?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
       window.open(mailtoLink);
       
       toast({
@@ -136,17 +187,78 @@ const BookingForm = ({
     }
   };
 
+  // Get the current event to display
+  const getCurrentEvent = () => {
+    if (eventTitle) {
+      return {
+        title: eventTitle,
+        location: eventLocation,
+        date: eventDate,
+        time: eventTime,
+        price: eventPrice
+      };
+    }
+    
+    const selectedEventId = form.watch("selectedEventId");
+    if (selectedEventId) {
+      const selectedEvent = availableEvents.find(e => e.id.toString() === selectedEventId);
+      if (selectedEvent) {
+        return {
+          title: selectedEvent.title,
+          location: selectedEvent.location,
+          date: selectedEvent.date,
+          time: selectedEvent.time,
+          price: selectedEvent.price
+        };
+      }
+    }
+    
+    return null;
+  };
+
+  const currentEvent = getCurrentEvent();
+  const availableDates = getAvailableDates(currentEvent?.date);
+
   return (
     <div className="space-y-6">
-      <div className="bg-dark-lighter p-4 rounded-lg mb-6">
-        <h3 className="text-lg font-semibold mb-2">{eventTitle}</h3>
-        <div className="text-white/70 text-sm">
-          <p>Location: {eventLocation}</p>
-          <p>Date: {eventDate}</p>
-          <p>Time: {eventTime}</p>
-          <p className="text-gold font-semibold mt-2">{eventPrice} per person</p>
+      {!eventTitle && availableEvents.length > 0 && (
+        <FormField
+          control={form.control}
+          name="selectedEventId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Select Event*</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select an event" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="bg-dark-lighter border-dark-lighter">
+                  {availableEvents.map((event) => (
+                    <SelectItem key={event.id} value={event.id.toString()}>
+                      {event.title} - {event.date}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {currentEvent && (
+        <div className="bg-dark-lighter p-4 rounded-lg mb-6">
+          <h3 className="text-lg font-semibold mb-2">{currentEvent.title}</h3>
+          <div className="text-white/70 text-sm">
+            <p>Location: {currentEvent.location}</p>
+            <p>Date: {currentEvent.date}</p>
+            <p>Time: {currentEvent.time}</p>
+            <p className="text-gold font-semibold mt-2">{currentEvent.price} per person</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -255,7 +367,6 @@ const BookingForm = ({
                       selected={field.value}
                       onSelect={field.onChange}
                       disabled={(date) => {
-                        const availableDates = getAvailableDates();
                         return (
                           date < availableDates.from ||
                           date > availableDates.to ||
@@ -332,10 +443,15 @@ const BookingForm = ({
           <div className="bg-dark-lighter p-4 rounded-lg">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-gold flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-white/70">
-                By submitting this form, you're registering your interest in attending this event.
-                Our team will contact you to confirm your booking and arrange payment details.
-              </p>
+              <div className="text-sm text-white/70">
+                <p>
+                  By submitting this form, you're registering your interest in attending this event.
+                  Our team will contact you to confirm your booking and arrange payment details.
+                </p>
+                <p className="mt-2">
+                  For more information, please contact <a href="mailto:support@stevenbartlett.info" className="text-gold hover:underline">support@stevenbartlett.info</a>
+                </p>
+              </div>
             </div>
           </div>
 

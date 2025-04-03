@@ -20,51 +20,99 @@ import {
 } from "@/components/ui/dialog";
 import BookingForm from "./BookingForm";
 
+// Event data - expanded with more events
+const allEvents = [
+  {
+    id: 1,
+    title: "London VIP Meet & Greet",
+    date: "June 15, 2024",
+    time: "6:00 PM - 9:00 PM",
+    location: "The Savoy, London",
+    spots: "10 spots left",
+    price: "£299",
+    featured: true,
+  },
+  {
+    id: 2,
+    title: "Manchester Exclusive Dinner",
+    date: "July 23, 2024",
+    time: "7:00 PM - 10:30 PM",
+    location: "The Ivy, Manchester",
+    spots: "5 spots left",
+    price: "£399",
+    featured: false,
+  },
+  {
+    id: 3,
+    title: "New York CEO Breakfast",
+    date: "August 12, 2024",
+    time: "8:30 AM - 11:00 AM",
+    location: "The Plaza Hotel, NYC",
+    spots: "15 spots left",
+    price: "$499",
+    featured: false,
+  },
+  {
+    id: 4,
+    title: "Dubai Business Masterclass",
+    date: "September 5, 2024",
+    time: "10:00 AM - 2:00 PM",
+    location: "Burj Al Arab, Dubai",
+    spots: "8 spots left",
+    price: "$599",
+    featured: false,
+  },
+  {
+    id: 5,
+    title: "Paris Networking Evening",
+    date: "October 18, 2024",
+    time: "7:00 PM - 10:00 PM",
+    location: "Four Seasons Hotel George V, Paris",
+    spots: "12 spots left",
+    price: "€349",
+    featured: false,
+  },
+  {
+    id: 6,
+    title: "Berlin Entrepreneurship Workshop",
+    date: "November 9, 2024",
+    time: "9:00 AM - 4:00 PM",
+    location: "Hotel Adlon Kempinski, Berlin",
+    spots: "20 spots left",
+    price: "€299",
+    featured: false,
+  },
+];
+
 const Events = () => {
   const isMobile = useIsMobile();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [showAllEvents, setShowAllEvents] = useState(false);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
   
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "London VIP Meet & Greet",
-      date: "June 15, 2024",
-      time: "6:00 PM - 9:00 PM",
-      location: "The Savoy, London",
-      spots: "10 spots left",
-      price: "£299",
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Manchester Exclusive Dinner",
-      date: "July 23, 2024",
-      time: "7:00 PM - 10:30 PM",
-      location: "The Ivy, Manchester",
-      spots: "5 spots left",
-      price: "£399",
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "New York CEO Breakfast",
-      date: "August 12, 2024",
-      time: "8:30 AM - 11:00 AM",
-      location: "The Plaza Hotel, NYC",
-      spots: "15 spots left",
-      price: "$499",
-      featured: false,
-    },
-  ];
+  // Display featured events first, then limit to 3 unless showing all
+  const displayEvents = showAllEvents 
+    ? allEvents 
+    : allEvents.filter((event, index) => event.featured || index < 3);
 
   const handleBookNow = (event) => {
     setSelectedEvent(event);
     setBookingDialogOpen(true);
   };
 
+  const handleViewSchedule = () => {
+    setSelectedEvent(null); // No specific event selected
+    setScheduleDialogOpen(true);
+  };
+
   const handleBookingSuccess = () => {
     setBookingDialogOpen(false);
+    setScheduleDialogOpen(false);
+  };
+
+  const handleViewAllEvents = () => {
+    setShowAllEvents(true);
   };
 
   const renderEventCard = (event) => (
@@ -138,7 +186,7 @@ const Events = () => {
           <div className="px-4 reveal">
             <Carousel className="w-full">
               <CarouselContent>
-                {upcomingEvents.map((event) => (
+                {displayEvents.map((event) => (
                   <CarouselItem key={event.id}>
                     {renderEventCard(event)}
                   </CarouselItem>
@@ -151,15 +199,32 @@ const Events = () => {
             </Carousel>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-6 reveal">
-            {upcomingEvents.map(renderEventCard)}
+          <div className={`grid gap-6 reveal ${showAllEvents ? 'md:grid-cols-3' : 'md:grid-cols-3'}`}>
+            {displayEvents.map(renderEventCard)}
           </div>
         )}
 
         <div className="text-center mt-8 md:mt-12">
-          <Button variant="outline" className="border-gold/50 text-gold hover:bg-gold/10">
-            View All Events
-          </Button>
+          {!showAllEvents && (
+            <Button 
+              variant="outline" 
+              className="border-gold/50 text-gold hover:bg-gold/10"
+              onClick={handleViewAllEvents}
+            >
+              View All Events
+            </Button>
+          )}
+
+          {showAllEvents && (
+            <Button 
+              variant="outline" 
+              className="border-gold/50 text-gold hover:bg-gold/10 ml-4"
+              onClick={handleViewSchedule}
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              View Schedule
+            </Button>
+          )}
         </div>
 
         {/* Booking Dialog */}
@@ -179,9 +244,34 @@ const Events = () => {
                 eventLocation={selectedEvent.location}
                 eventDate={selectedEvent.date}
                 eventTime={selectedEvent.time}
+                eventId={selectedEvent.id}
                 onSubmitSuccess={handleBookingSuccess}
               />
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Schedule Dialog for View Schedule button */}
+        <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+          <DialogContent className="max-w-3xl bg-dark border-dark-lighter text-white max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl md:text-2xl">Event Schedule</DialogTitle>
+              <DialogDescription className="text-white/70">
+                Choose an event and book your spot
+              </DialogDescription>
+            </DialogHeader>
+            
+            <BookingForm 
+              availableEvents={allEvents.map(event => ({
+                id: event.id,
+                title: event.title, 
+                date: event.date,
+                location: event.location,
+                price: event.price,
+                time: event.time
+              }))}
+              onSubmitSuccess={handleBookingSuccess}
+            />
           </DialogContent>
         </Dialog>
       </div>
