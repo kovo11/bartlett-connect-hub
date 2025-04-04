@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { sendConfirmationEmail } from "@/utils/emailUtils";
 
 // Define the form schema
 const formSchema = z.object({
@@ -45,13 +46,43 @@ const Registration = () => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     console.log("Form submitted:", data);
-    toast({
-      title: "Registration submitted!",
-      description: "We'll contact you soon with more details.",
-      duration: 5000,
-    });
+    
+    try {
+      // Send email to support
+      const emailSubject = `New Interest Registration: ${data.name}`;
+      const emailBody = `
+        New registration from the website:
+        
+        Name: ${data.name}
+        Email: ${data.email}
+        Preferred Location: ${data.location}
+        Event Type: ${data.eventType}
+      `;
+      
+      const adminMailtoLink = `mailto:support@stevenbartlett.info?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+      window.open(adminMailtoLink, '_blank');
+      
+      // Send confirmation email to user
+      await sendConfirmationEmail(data.email, data.name, data.location, data.eventType);
+      
+      toast({
+        title: "Registration submitted!",
+        description: "We've sent you a confirmation email with more details.",
+        duration: 5000,
+      });
+      
+      form.reset();
+    } catch (error) {
+      console.error("Error processing submission:", error);
+      toast({
+        title: "Something went wrong",
+        description: "Please try again later.",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   };
 
   return (
