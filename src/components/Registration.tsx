@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -21,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { sendConfirmationEmail } from "@/utils/emailUtils";
+import { sendConfirmationEmail, initEmailJS } from "@/utils/emailUtils";
 
 // Define the form schema
 const formSchema = z.object({
@@ -35,6 +34,11 @@ type FormValues = z.infer<typeof formSchema>;
 
 const Registration = () => {
   const { toast } = useToast();
+  
+  useEffect(() => {
+    // Initialize EmailJS when component mounts
+    initEmailJS();
+  }, []);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,25 +54,11 @@ const Registration = () => {
     console.log("Form submitted:", data);
     
     try {
-      // Send email to support
-      const emailSubject = `New Interest Registration: ${data.name}`;
-      const emailBody = `
-        New registration from the website:
-        
-        Name: ${data.name}
-        Email: ${data.email}
-        Preferred Location: ${data.location}
-        Event Type: ${data.eventType}
-      `;
-      
-      const adminMailtoLink = `mailto:support@stevenbartlett.info?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-      window.open(adminMailtoLink, '_blank');
-      
-      // Send confirmation email to user
+      // Send confirmation email to user using EmailJS
       await sendConfirmationEmail(data.email, data.name, data.location, data.eventType);
       
       toast({
-        title: "Registration submitted!",
+        title: "Registration successful!",
         description: "We've sent you a confirmation email with more details.",
         duration: 5000,
       });

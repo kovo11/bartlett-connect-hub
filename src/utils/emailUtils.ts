@@ -1,5 +1,6 @@
 
 import { format } from "date-fns";
+import emailjs from 'emailjs-com';
 
 // Email template for registration confirmation
 const generateEmailTemplate = (
@@ -136,54 +137,74 @@ const generateEmailTemplate = (
   `;
 };
 
-// Function to send confirmation email
+// Function to initialize EmailJS
+export const initEmailJS = () => {
+  // Replace with your actual EmailJS user ID
+  emailjs.init("YOUR_EMAILJS_USER_ID");
+};
+
+// Function to send confirmation email using EmailJS
 export const sendConfirmationEmail = async (
   email: string,
   name: string,
   location: string,
   eventType: string
 ): Promise<void> => {
-  const emailSubject = "Thank You for Registering Your Interest - Steven Bartlett Events";
-  const emailTemplate = generateEmailTemplate(name, location, eventType);
+  const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
   
-  // For now, we'll use mailto as a simple solution
-  // In a production environment, you would use a proper email service API
-  const emailTo = encodeURIComponent(email);
-  const subject = encodeURIComponent(emailSubject);
-  
-  // Convert HTML to plain text as a fallback for email clients that don't support HTML
-  const plainTextContent = `
-Thank You for Registering!
+  let eventTypeName = "";
+  switch(eventType) {
+    case "meetgreet":
+      eventTypeName = "Meet & Greet";
+      break;
+    case "dinner":
+      eventTypeName = "VIP Dinner";
+      break;
+    case "workshop":
+      eventTypeName = "Workshop";
+      break;
+    case "qa":
+      eventTypeName = "Q&A Session";
+      break;
+    default:
+      eventTypeName = eventType;
+  }
 
-Hello ${name},
+  // For EmailJS - prepare the template parameters
+  const templateParams = {
+    to_name: name,
+    to_email: email,
+    event_type: eventTypeName,
+    location: formattedLocation,
+    date_registered: format(new Date(), "MMMM d, yyyy")
+  };
 
-Thank you for registering your interest in our upcoming ${eventType} event. We're thrilled to have you join us!
+  try {
+    // Send email to user
+    await emailjs.send(
+      "YOUR_EMAILJS_SERVICE_ID", // Replace with your EmailJS service ID
+      "YOUR_EMAILJS_TEMPLATE_ID", // Replace with your EmailJS template ID
+      templateParams
+    );
 
-Event Type: ${eventType}
-Preferred Location: ${location}
-Date Registered: ${format(new Date(), "MMMM d, yyyy")}
+    // Also send a notification to support
+    const adminTemplateParams = {
+      name: name,
+      email: email,
+      location: formattedLocation,
+      event_type: eventTypeName,
+      date: format(new Date(), "MMMM d, yyyy")
+    };
 
-We'll be in touch soon with more information about upcoming events that match your preferences. In the meantime, if you have any questions, please don't hesitate to contact us.
+    await emailjs.send(
+      "YOUR_EMAILJS_SERVICE_ID", // Replace with your EmailJS service ID
+      "YOUR_ADMIN_TEMPLATE_ID", // Replace with your admin template ID
+      adminTemplateParams,
+      "YOUR_EMAILJS_USER_ID" // Replace with your EmailJS user ID
+    );
 
-Best regards,
-The Steven Bartlett Team
-
-Visit Our Website: https://stevenbartlett.info
-
-© ${new Date().getFullYear()} Steven Bartlett. All rights reserved.
-You're receiving this email because you registered for one of our events.
-  `.trim();
-  
-  // Create a data URI for the HTML content
-  const dataUri = `data:text/html;charset=utf-8,${encodeURIComponent(emailTemplate)}`;
-  
-  // Open the user's email client with the prepared email
-  const mailtoLink = `mailto:${emailTo}?subject=${subject}&body=${encodeURIComponent(plainTextContent)}`;
-  
-  // Open in a new window/tab
-  window.open(mailtoLink, '_blank');
-  
-  // Also open the HTML preview in a new tab (this is just for demonstration)
-  // In a real app with a proper email service, this wouldn't be necessary
-  window.open(dataUri, '_blank');
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Failed to send confirmation email");
+  }
 };
