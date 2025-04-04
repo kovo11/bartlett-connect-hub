@@ -4,19 +4,50 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+// Define the form schema
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name is required" }),
+  email: z.string().email({ message: "Valid email is required" }),
+  location: z.string().min(1, { message: "Please select a location" }),
+  eventType: z.string().min(1, { message: "Please select an event type" }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 const Registration = () => {
   const { toast } = useToast();
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      location: "",
+      eventType: "",
+    },
+  });
+
+  const handleSubmit = form.handleSubmit((data) => {
+    console.log("Form submitted:", data);
     toast({
       title: "Registration submitted!",
       description: "We'll contact you soon with more details.",
       duration: 5000,
     });
-  };
+  });
 
   return (
     <section id="register" className="section-padding relative overflow-hidden">
@@ -73,66 +104,102 @@ const Registration = () => {
             </div>
             
             <div className="bg-dark-light p-8 rounded-xl shadow-lg border border-dark-lighter reveal">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input 
-                    id="name" 
-                    placeholder="Your name" 
-                    required 
-                    className="bg-dark border-dark-lighter focus:border-gold"
+              <Form {...form}>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Your name" 
+                            {...field}
+                            className="bg-dark border-dark-lighter focus:border-gold"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="Your email" 
-                    required 
-                    className="bg-dark border-dark-lighter focus:border-gold"
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email" 
+                            placeholder="Your email" 
+                            {...field}
+                            className="bg-dark border-dark-lighter focus:border-gold"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="location">Preferred Location</Label>
-                  <Select>
-                    <SelectTrigger className="bg-dark border-dark-lighter focus:border-gold">
-                      <SelectValue placeholder="Select a location" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-dark-light">
-                      <SelectItem value="london">London</SelectItem>
-                      <SelectItem value="manchester">Manchester</SelectItem>
-                      <SelectItem value="newyork">New York</SelectItem>
-                      <SelectItem value="losangeles">Los Angeles</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="event">Event Type</Label>
-                  <Select>
-                    <SelectTrigger className="bg-dark border-dark-lighter focus:border-gold">
-                      <SelectValue placeholder="Select an event type" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-dark-light">
-                      <SelectItem value="meetgreet">Meet & Greet</SelectItem>
-                      <SelectItem value="dinner">VIP Dinner</SelectItem>
-                      <SelectItem value="workshop">Workshop</SelectItem>
-                      <SelectItem value="qa">Q&A Session</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gold hover:bg-gold-dark text-dark font-medium"
-                >
-                  Register Interest
-                </Button>
-              </form>
+                  
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preferred Location</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-dark border-dark-lighter focus:border-gold">
+                              <SelectValue placeholder="Select a location" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-dark-light">
+                            <SelectItem value="london">London</SelectItem>
+                            <SelectItem value="manchester">Manchester</SelectItem>
+                            <SelectItem value="newyork">New York</SelectItem>
+                            <SelectItem value="losangeles">Los Angeles</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="eventType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Event Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-dark border-dark-lighter focus:border-gold">
+                              <SelectValue placeholder="Select an event type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-dark-light">
+                            <SelectItem value="meetgreet">Meet & Greet</SelectItem>
+                            <SelectItem value="dinner">VIP Dinner</SelectItem>
+                            <SelectItem value="workshop">Workshop</SelectItem>
+                            <SelectItem value="qa">Q&A Session</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gold hover:bg-gold-dark text-dark font-medium"
+                  >
+                    Register Interest
+                  </Button>
+                </form>
+              </Form>
             </div>
           </div>
         </div>
