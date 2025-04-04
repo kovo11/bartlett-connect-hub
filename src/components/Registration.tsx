@@ -2,8 +2,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +14,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Define the form schema
 const formSchema = z.object({
@@ -40,14 +45,14 @@ const Registration = () => {
     },
   });
 
-  const handleSubmit = form.handleSubmit((data) => {
+  const onSubmit = (data: FormValues) => {
     console.log("Form submitted:", data);
     toast({
       title: "Registration submitted!",
       description: "We'll contact you soon with more details.",
       duration: 5000,
     });
-  });
+  };
 
   return (
     <section id="register" className="section-padding relative overflow-hidden">
@@ -105,7 +110,7 @@ const Registration = () => {
             
             <div className="bg-dark-light p-8 rounded-xl shadow-lg border border-dark-lighter reveal">
               <Form {...form}>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <FormField
                     control={form.control}
                     name="name"
