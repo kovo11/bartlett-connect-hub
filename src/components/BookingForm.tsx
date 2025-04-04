@@ -78,6 +78,9 @@ const BookingForm = ({
   onSubmitSuccess
 }: BookingFormProps) => {
   const { toast } = useToast();
+  
+  // Set default date to May 1st, 2025
+  const defaultDate = new Date(2025, 4, 1); // Month is 0-indexed, so 4 = May
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -87,6 +90,7 @@ const BookingForm = ({
       phone: "",
       company: "",
       attendeeCount: "1",
+      selectedDate: defaultDate,
       dietaryRequirements: "",
       questions: "",
       marketingConsent: false,
@@ -94,17 +98,14 @@ const BookingForm = ({
     },
   });
 
-  // Generate available dates (for demonstration, using dates around the event date)
+  // Generate available dates (start from May 2025)
   const getAvailableDates = (date?: string) => {
-    const today = new Date();
-    const eventDateObj = date ? new Date(date) : new Date();
-    const startDate = new Date();
-    startDate.setDate(Math.max(today.getDate(), eventDateObj.getDate() - 7));
-    const endDate = new Date(eventDateObj);
-    endDate.setDate(eventDateObj.getDate() + 7);
+    const mayFirst2025 = new Date(2025, 4, 1); // May 1st 2025
+    const eventDateObj = date ? new Date(date) : new Date(2025, 4, 15); // Default to May 15th if no date provided
+    const endDate = new Date(2025, 11, 31); // End of 2025
     
     return {
-      from: startDate,
+      from: mayFirst2025,
       to: endDate,
     };
   };
@@ -116,7 +117,7 @@ const BookingForm = ({
       const selectedEvent = availableEvents.find(e => e.id.toString() === selectedEventId);
       if (selectedEvent) {
         // No need to set values here, we'll just use the selected event for display
-        form.setValue("selectedDate", new Date());
+        form.setValue("selectedDate", defaultDate);
       }
     }
   }, [form.watch("selectedEventId"), availableEvents]);
@@ -234,7 +235,7 @@ const BookingForm = ({
                     <SelectValue placeholder="Select an event" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="bg-dark-lighter border-dark-lighter">
+                <SelectContent className="bg-dark-lighter border-dark-lighter z-50">
                   {availableEvents.map((event) => (
                     <SelectItem key={event.id} value={event.id.toString()}>
                       {event.title} - {event.date}
@@ -361,7 +362,7 @@ const BookingForm = ({
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-dark-light border-dark-lighter" align="start">
+                  <PopoverContent className="w-auto p-0 bg-dark-light border-dark-lighter z-50" align="start">
                     <Calendar
                       mode="single"
                       selected={field.value}
@@ -374,8 +375,8 @@ const BookingForm = ({
                           date.getDay() === 0
                         );
                       }}
+                      defaultMonth={availableDates.from}
                       initialFocus
-                      className="pointer-events-auto"
                     />
                   </PopoverContent>
                 </Popover>
