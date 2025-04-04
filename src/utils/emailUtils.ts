@@ -1,6 +1,20 @@
-
 import { format } from "date-fns";
-import emailjs from 'emailjs-com';
+
+// Format event type for display
+const formatEventType = (eventType: string): string => {
+  switch(eventType) {
+    case "meetgreet":
+      return "Meet & Greet";
+    case "dinner":
+      return "VIP Dinner";
+    case "workshop":
+      return "Workshop";
+    case "qa":
+      return "Q&A Session";
+    default:
+      return eventType;
+  }
+};
 
 // Email template for registration confirmation
 const generateEmailTemplate = (
@@ -10,25 +24,7 @@ const generateEmailTemplate = (
 ): string => {
   // Format location and event type for display
   const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
-  
-  let eventTypeName = "";
-  switch(eventType) {
-    case "meetgreet":
-      eventTypeName = "Meet & Greet";
-      break;
-    case "dinner":
-      eventTypeName = "VIP Dinner";
-      break;
-    case "workshop":
-      eventTypeName = "Workshop";
-      break;
-    case "qa":
-      eventTypeName = "Q&A Session";
-      break;
-    default:
-      eventTypeName = eventType;
-  }
-
+  const eventTypeName = formatEventType(eventType);
   const currentYear = new Date().getFullYear();
   const formattedDate = format(new Date(), "MMMM d, yyyy");
 
@@ -137,13 +133,7 @@ const generateEmailTemplate = (
   `;
 };
 
-// Function to initialize EmailJS
-export const initEmailJS = () => {
-  // Replace with your actual EmailJS user ID
-  emailjs.init("YOUR_EMAILJS_USER_ID");
-};
-
-// Function to send confirmation email using EmailJS
+// Send confirmation email using Formspree
 export const sendConfirmationEmail = async (
   email: string,
   name: string,
@@ -151,60 +141,42 @@ export const sendConfirmationEmail = async (
   eventType: string
 ): Promise<void> => {
   const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
+  const eventTypeName = formatEventType(eventType);
   
-  let eventTypeName = "";
-  switch(eventType) {
-    case "meetgreet":
-      eventTypeName = "Meet & Greet";
-      break;
-    case "dinner":
-      eventTypeName = "VIP Dinner";
-      break;
-    case "workshop":
-      eventTypeName = "Workshop";
-      break;
-    case "qa":
-      eventTypeName = "Q&A Session";
-      break;
-    default:
-      eventTypeName = eventType;
-  }
-
-  // For EmailJS - prepare the template parameters
-  const templateParams = {
-    to_name: name,
-    to_email: email,
-    event_type: eventTypeName,
-    location: formattedLocation,
-    date_registered: format(new Date(), "MMMM d, yyyy")
-  };
-
   try {
-    // Send email to user
-    await emailjs.send(
-      "YOUR_EMAILJS_SERVICE_ID", // Replace with your EmailJS service ID
-      "YOUR_EMAILJS_TEMPLATE_ID", // Replace with your EmailJS template ID
-      templateParams
-    );
-
-    // Also send a notification to support
-    const adminTemplateParams = {
-      name: name,
-      email: email,
+    // Create an object with the form data
+    const formData = {
+      email,
+      name,
       location: formattedLocation,
-      event_type: eventTypeName,
-      date: format(new Date(), "MMMM d, yyyy")
+      eventType: eventTypeName,
+      date: format(new Date(), "MMMM d, yyyy"),
+      message: `New registration for ${eventTypeName} event in ${formattedLocation}`,
+      _subject: `Registration for ${eventTypeName} Event`,
     };
 
-    await emailjs.send(
-      "YOUR_EMAILJS_SERVICE_ID", // Replace with your EmailJS service ID
-      "YOUR_ADMIN_TEMPLATE_ID", // Replace with your admin template ID
-      adminTemplateParams,
-      "YOUR_EMAILJS_USER_ID" // Replace with your EmailJS user ID
-    );
+    // Send to Formspree
+    const response = await fetch("https://formspree.io/f/YOUR_FORMSPREE_ID", { // Replace with your Formspree endpoint
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to send email");
+    }
 
   } catch (error) {
     console.error("Failed to send email:", error);
     throw new Error("Failed to send confirmation email");
   }
+};
+
+// For backward compatibility, keep the initEmailJS function as a no-op
+export const initEmailJS = (): void => {
+  // This function now does nothing as we're not using EmailJS
+  console.log("Email service initialized");
 };

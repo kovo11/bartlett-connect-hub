@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +37,7 @@ const Registration = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    // Initialize EmailJS when component mounts
+    // Initialize email service when component mounts
     initEmailJS();
   }, []);
   
@@ -54,12 +55,12 @@ const Registration = () => {
     console.log("Form submitted:", data);
     
     try {
-      // Send confirmation email to user using EmailJS
+      // Send confirmation email using the email service
       await sendConfirmationEmail(data.email, data.name, data.location, data.eventType);
       
       toast({
         title: "Registration successful!",
-        description: "We've sent you a confirmation email with more details.",
+        description: "Your registration has been submitted. We'll be in touch soon.",
         duration: 5000,
       });
       
