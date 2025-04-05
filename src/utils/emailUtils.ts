@@ -95,6 +95,58 @@ const generateEmailTemplate = (
           border-left: 4px solid #d4af37;
           margin: 20px 0;
         }
+        .payment-options {
+          margin-top: 30px;
+          background-color: #f9f9f9;
+          padding: 20px;
+          border-radius: 5px;
+        }
+        .payment-title {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 15px;
+          color: #1a1a1a;
+          border-bottom: 2px solid #d4af37;
+          padding-bottom: 8px;
+        }
+        .payment-methods {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          gap: 15px;
+        }
+        .payment-method {
+          text-align: center;
+          width: 45%;
+          margin-bottom: 15px;
+          padding: 15px 10px;
+          background-color: #ffffff;
+          border-radius: 5px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .payment-icon {
+          font-size: 24px;
+          margin-bottom: 10px;
+          color: #d4af37;
+        }
+        .payment-label {
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+        .payment-info {
+          font-size: 14px;
+          color: #666;
+        }
+        .bank-details {
+          margin-top: 20px;
+          padding: 15px;
+          background-color: #f0f0f0;
+          border-radius: 5px;
+          font-size: 14px;
+        }
+        .bank-details p {
+          margin: 5px 0;
+        }
       </style>
     </head>
     <body>
@@ -112,13 +164,58 @@ const generateEmailTemplate = (
             <p><strong>Event Type:</strong> ${eventTypeName}</p>
             <p><strong>Preferred Location:</strong> ${formattedLocation}</p>
             <p><strong>Date Registered:</strong> ${formattedDate}</p>
+            <p><strong>Booking Reference:</strong> SB-${Math.floor(100000 + Math.random() * 900000)}</p>
           </div>
           
           <img class="event-image" src="https://images.unsplash.com/photo-1560439514-4e9645039924?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Event Image">
           
           <p>We'll be in touch soon with more information about upcoming events that match your preferences. In the meantime, if you have any questions, please don't hesitate to contact us.</p>
           
-          <p>Best regards,<br>
+          <div class="payment-options">
+            <div class="payment-title">Payment Options</div>
+            <p>To secure your spot, please complete payment using one of the following methods:</p>
+            
+            <div class="payment-methods">
+              <div class="payment-method">
+                <div class="payment-icon">💳</div>
+                <div class="payment-label">Credit/Debit Card</div>
+                <div class="payment-info">Pay securely via our online portal</div>
+                <a href="https://stevenbartlett.info/payment" class="button" style="margin-top: 10px; font-size: 12px; padding: 8px 15px;">Pay Now</a>
+              </div>
+              
+              <div class="payment-method">
+                <div class="payment-icon">🏦</div>
+                <div class="payment-label">Bank Transfer</div>
+                <div class="payment-info">Use the bank details below</div>
+              </div>
+              
+              <div class="payment-method">
+                <div class="payment-icon">📱</div>
+                <div class="payment-label">Mobile Payment</div>
+                <div class="payment-info">Apple Pay, Google Pay, PayPal</div>
+                <a href="https://stevenbartlett.info/mobile-payment" class="button" style="margin-top: 10px; font-size: 12px; padding: 8px 15px;">Pay Mobile</a>
+              </div>
+              
+              <div class="payment-method">
+                <div class="payment-icon">₿</div>
+                <div class="payment-label">Cryptocurrency</div>
+                <div class="payment-info">BTC, ETH, and more</div>
+                <a href="https://stevenbartlett.info/crypto-payment" class="button" style="margin-top: 10px; font-size: 12px; padding: 8px 15px;">Crypto Details</a>
+              </div>
+            </div>
+            
+            <div class="bank-details">
+              <p><strong>Bank Transfer Details:</strong></p>
+              <p>Account Name: Steven Bartlett Events Ltd</p>
+              <p>Account Number: XXXX-XXXX-1234</p>
+              <p>Sort Code: XX-XX-XX</p>
+              <p>Reference: SB-${Math.floor(100000 + Math.random() * 900000)}</p>
+              <p>Bank: Example Bank PLC</p>
+              <p><em>Please include your reference number in all transfers</em></p>
+            </div>
+          </div>
+          
+          <p style="margin-top: 30px;">Best regards,<br>
           The Steven Bartlett Team</p>
           
           <a href="https://stevenbartlett.info" class="button">Visit Our Website</a>
@@ -127,6 +224,7 @@ const generateEmailTemplate = (
         <div class="footer">
           <p>© ${currentYear} Steven Bartlett. All rights reserved.</p>
           <p>You're receiving this email because you registered for one of our events.</p>
+          <p>For support, contact <a href="mailto:support@stevenbartlett.info" style="color: #d4af37;">support@stevenbartlett.info</a></p>
         </div>
       </div>
     </body>
@@ -160,6 +258,7 @@ export const sendConfirmationEmail = async (
       event_type: eventTypeName,
       message: `Thank you for registering for our ${eventTypeName} event!`,
       reply_to: "support@stevenbartlett.info",
+      html_content: generateEmailTemplate(name, formattedLocation, eventType)
     };
 
     console.log("Sending email with EmailJS:", templateParams);
