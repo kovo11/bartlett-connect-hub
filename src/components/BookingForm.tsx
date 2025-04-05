@@ -33,6 +33,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { sendConfirmationEmail, sendSupportEmail } from "@/utils/emailUtils";
+
 const formSchema = z.object({
   fullName: z.string().min(2, { message: "Full name is required" }),
   email: z.string().email({ message: "Invalid email address" }),
@@ -78,9 +80,8 @@ const BookingForm = ({
 }: BookingFormProps) => {
   const { toast } = useToast();
   
-  // Set default date to May 1st, 2025
-  const defaultDate = new Date(2025, 4, 1); // Month is 0-indexed, so 4 = May
-
+  const defaultDate = new Date(2025, 4, 1); // May 1st, 2025
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -97,41 +98,35 @@ const BookingForm = ({
     },
   });
 
-  // Generate available dates (start from May 2025)
-  const getAvailableDates = (date?: string) => {
-    const mayFirst2025 = new Date(2025, 4, 1); // May 1st 2025
-    const eventDateObj = date ? new Date(date) : new Date(2025, 4, 15); // Default to May 15th if no date provided
-    const endDate = new Date(2025, 11, 31); // End of 2025
-    
-    return {
-      from: mayFirst2025,
-      to: endDate,
-    };
-  };
+  const selectedEventId = form.watch("selectedEventId");
 
-  // If event is selected from dropdown, update form
   React.useEffect(() => {
-    const selectedEventId = form.watch("selectedEventId");
     if (selectedEventId && availableEvents.length > 0) {
       const selectedEvent = availableEvents.find(e => e.id.toString() === selectedEventId);
       if (selectedEvent) {
-        // No need to set values here, we'll just use the selected event for display
-        form.setValue("selectedDate", defaultDate);
+        form.setValue("selectedDate", defaultDate); // Ensure date is selected when an event is chosen
       }
     }
-  }, [form.watch("selectedEventId"), availableEvents]);
+  }, [selectedEventId, availableEvents]);
 
   const onSubmit = async (data: FormValues) => {
     console.log("Form submitted:", data);
-    
-    // Determine which event details to use
+
+    if (!data.email) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Email address is required to complete the registration.",
+      });
+      return;
+    }
+
     let finalEventTitle = eventTitle;
     let finalEventPrice = eventPrice;
     let finalEventLocation = eventLocation;
     let finalEventDate = eventDate;
     let finalEventTime = eventTime;
 
-    // If the user selected an event from dropdown
     if (data.selectedEventId && availableEvents.length > 0) {
       const selectedEvent = availableEvents.find(e => e.id.toString() === data.selectedEventId);
       if (selectedEvent) {
@@ -142,40 +137,36 @@ const BookingForm = ({
         finalEventTime = selectedEvent.time;
       }
     }
-    
+
+    const bookingDetails = `
+Booking Details:
+Name: ${data.fullName}
+Email: ${data.email}
+Phone: ${data.phone}
+Company: ${data.company || "Not provided"}
+Attendees: ${data.attendeeCount}
+Preferred Date: ${format(data.selectedDate, "PPP")}
+Dietary Requirements: ${data.dietaryRequirements || "None"}
+Questions: ${data.questions || "None"}
+Marketing Consent: ${data.marketingConsent ? "Yes" : "No"}
+
+Event Details:
+Title: ${finalEventTitle || "No specific event selected"}
+Price: ${finalEventPrice || "N/A"}
+Location: ${finalEventLocation || "N/A"}
+Date: ${finalEventDate || "N/A"}
+Time: ${finalEventTime || "N/A"}
+    `;
+
     try {
-      // Email content construction
-      const emailSubject = `New Registration for ${finalEventTitle || 'Upcoming Event'}`;
-      const emailBody = `
-        New registration for ${finalEventTitle || 'Upcoming Event'}:
-        
-        Name: ${data.fullName}
-        Email: ${data.email}
-        Phone: ${data.phone}
-        Company: ${data.company || "Not provided"}
-        Number of Attendees: ${data.attendeeCount}
-        Preferred Date: ${format(data.selectedDate, "PPP")}
-        Dietary Requirements: ${data.dietaryRequirements || "None"}
-        Questions: ${data.questions || "None"}
-        Marketing Consent: ${data.marketingConsent ? "Yes" : "No"}
-        
-        Event Details:
-        Title: ${finalEventTitle || "No specific event selected"}
-        Price: ${finalEventPrice || "N/A"}
-        Location: ${finalEventLocation || "N/A"}
-        Date: ${finalEventDate || "N/A"}
-        Time: ${finalEventTime || "N/A"}
-      `;
-      
-      // Email sending via mailto (client-side approach)
-      const mailtoLink = `mailto:support@stevenbartlett.info?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-      window.open(mailtoLink);
-      
+      await sendSupportEmail(data.fullName, data.email, bookingDetails, finalEventTitle || "General", finalEventLocation || "N/A");
+      await sendConfirmationEmail(data.email, data.fullName, finalEventLocation || "N/A", finalEventTitle || "General");
+
       toast({
         title: "Registration complete!",
         description: "Your booking request has been received. We'll contact you shortly to confirm your reservation.",
       });
-      
+
       onSubmitSuccess();
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -187,32 +178,29 @@ const BookingForm = ({
     }
   };
 
-  // Get the current event to display
+  const getAvailableDates = (date?: string) => {
+    const mayFirst2025 = new Date(2025, 4, 1); // May 1st, 2025
+    const eventDateObj = date ? new Date(date) : new Date(2025, 4, 15); // Default to May 15th, 2025
+    const endDate = new Date(2025, 11, 31); // December 31st, 2025
+
+    return {
+      from: mayFirst2025,
+      to: endDate,
+    };
+  };
+
   const getCurrentEvent = () => {
     if (eventTitle) {
-      return {
-        title: eventTitle,
-        location: eventLocation,
-        date: eventDate,
-        time: eventTime,
-        price: eventPrice
-      };
+      return { title: eventTitle, location: eventLocation, date: eventDate, time: eventTime, price: eventPrice };
     }
-    
-    const selectedEventId = form.watch("selectedEventId");
+
     if (selectedEventId) {
       const selectedEvent = availableEvents.find(e => e.id.toString() === selectedEventId);
       if (selectedEvent) {
-        return {
-          title: selectedEvent.title,
-          location: selectedEvent.location,
-          date: selectedEvent.date,
-          time: selectedEvent.time,
-          price: selectedEvent.price
-        };
+        return { title: selectedEvent.title, location: selectedEvent.location, date: selectedEvent.date, time: selectedEvent.time, price: selectedEvent.price };
       }
     }
-    
+
     return null;
   };
 
@@ -262,6 +250,7 @@ const BookingForm = ({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Full name */}
           <FormField
             control={form.control}
             name="fullName"
@@ -276,170 +265,127 @@ const BookingForm = ({
             )}
           />
 
+          {/* Email and Phone */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email Address*</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="you@example.com" className="text-black" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="email" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address*</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="you@example.com" className="text-black" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number*</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your contact number" className="text-black" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="phone" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number*</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your contact number" className="text-black" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
           </div>
 
+          {/* Company and Attendee count */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="company"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company/Organization</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your company name (optional)" className="text-black" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="company" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Company/Organization</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your company name (optional)" className="text-black" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-            <FormField
-              control={form.control}
-              name="attendeeCount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Number of Attendees*</FormLabel>
-                  <FormControl>
-                    <Input type="number" min="1" placeholder="1" className="text-black" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="attendeeCount" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Attendees*</FormLabel>
+                <FormControl>
+                  <Input type="number" min="1" placeholder="1" className="text-black" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
           </div>
 
-          <FormField
-            control={form.control}
-            name="selectedDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Preferred Date*</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Select an available date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-dark-light border-dark-lighter z-50" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => {
-                        return (
-                          date < availableDates.from ||
-                          date > availableDates.to ||
-                          // Disable weekends for example
-                          date.getDay() === 0
-                        );
-                      }}
-                      defaultMonth={availableDates.from}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="dietaryRequirements"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Dietary Requirements</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Please let us know about any dietary requirements or allergies"
-                    className="resize-none text-black"
-                    {...field}
+          {/* Date selection */}
+          <FormField control={form.control} name="selectedDate" render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Preferred Date*</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn("w-full text-left font-normal", !field.value && "text-muted-foreground", field.value && "text-black")}
+                    >
+                      {field.value ? format(field.value, "PPP") : <span>Select an available date</span>}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-dark-light border-dark-lighter z-50" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) => date < availableDates.from || date > availableDates.to || date.getDay() === 0}
+                    defaultMonth={availableDates.from}
+                    initialFocus
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )} />
 
-          <FormField
-            control={form.control}
-            name="questions"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Questions for Steven</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Any specific topics or questions you'd like to discuss?"
-                    className="resize-none text-black"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Dietary and questions */}
+          <FormField control={form.control} name="dietaryRequirements" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Dietary Requirements</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Please let us know about any dietary requirements or allergies"
+                  className="resize-none text-black"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
 
-          <FormField
-            control={form.control}
-            name="marketingConsent"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    I agree to receive marketing communications about future events
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+          <FormField control={form.control} name="questions" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Questions for Steven</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Any specific topics or questions you'd like to discuss?"
+                  className="resize-none text-black"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
 
+          {/* Marketing Consent */}
+          <FormField control={form.control} name="marketingConsent" render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>
+                  I agree to receive marketing communications about future events
+                </FormLabel>
+              </div>
+            </FormItem>
+          )} />
+
+          {/* Final Terms */}
           <div className="bg-dark-lighter p-4 rounded-lg">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-gold flex-shrink-0 mt-0.5" />

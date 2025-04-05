@@ -69,10 +69,10 @@ const FAQ = () => {
             <p className="text-white/70 text-sm md:text-base">
               Still have questions? Contact us at{" "}
               <a 
-                href="mailto:events@stevenbartlett.com" 
+                href="mailto:support@stevenbartlett.com" 
                 className="text-gold hover:underline"
               >
-                events@stevenbartlett.com
+                support@stevenbartlett.com
               </a>
             </p>
           </div>

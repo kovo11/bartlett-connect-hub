@@ -1,10 +1,9 @@
-
 import { format } from "date-fns";
-import emailjs from 'emailjs-com';
+import emailjs from "emailjs-com";
 
 // Format event type for display
 const formatEventType = (eventType: string): string => {
-  switch(eventType) {
+  switch (eventType) {
     case "meetgreet":
       return "Meet & Greet";
     case "dinner":
@@ -20,15 +19,16 @@ const formatEventType = (eventType: string): string => {
 
 // Email template for registration confirmation
 const generateEmailTemplate = (
-  name: string, 
-  location: string, 
-  eventType: string
+  name: string,
+  location: string,
+  eventType: string,
+  formattedDate: string
 ): string => {
   const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
   const eventTypeName = formatEventType(eventType);
   const currentYear = new Date().getFullYear();
-  const formattedDate = format(new Date(), "MMMM d, yyyy");
-
+  
+  // Return HTML with placeholders for dynamic content
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -55,10 +55,6 @@ const generateEmailTemplate = (
           color: #fff;
           padding: 20px;
           text-align: center;
-        }
-        .logo {
-          max-width: 150px;
-          margin-bottom: 20px;
         }
         .content {
           padding: 30px;
@@ -95,58 +91,6 @@ const generateEmailTemplate = (
           border-left: 4px solid #d4af37;
           margin: 20px 0;
         }
-        .payment-options {
-          margin-top: 30px;
-          background-color: #f9f9f9;
-          padding: 20px;
-          border-radius: 5px;
-        }
-        .payment-title {
-          font-size: 18px;
-          font-weight: bold;
-          margin-bottom: 15px;
-          color: #1a1a1a;
-          border-bottom: 2px solid #d4af37;
-          padding-bottom: 8px;
-        }
-        .payment-methods {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-          gap: 15px;
-        }
-        .payment-method {
-          text-align: center;
-          width: 45%;
-          margin-bottom: 15px;
-          padding: 15px 10px;
-          background-color: #ffffff;
-          border-radius: 5px;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .payment-icon {
-          font-size: 24px;
-          margin-bottom: 10px;
-          color: #d4af37;
-        }
-        .payment-label {
-          font-weight: bold;
-          margin-bottom: 5px;
-        }
-        .payment-info {
-          font-size: 14px;
-          color: #666;
-        }
-        .bank-details {
-          margin-top: 20px;
-          padding: 15px;
-          background-color: #f0f0f0;
-          border-radius: 5px;
-          font-size: 14px;
-        }
-        .bank-details p {
-          margin: 5px 0;
-        }
       </style>
     </head>
     <body>
@@ -156,73 +100,28 @@ const generateEmailTemplate = (
         </div>
         
         <div class="content">
-          <p>Hello <span class="highlight">${name}</span>,</p>
+          <p>Hello <span class="highlight">{{to_name}}</span>,</p>
           
-          <p>Thank you for registering your interest in our upcoming <span class="highlight">${eventTypeName}</span> event. We're thrilled to have you join us!</p>
+          <p>Thank you for registering your interest in our upcoming <span class="highlight">{{event_type}}</span> event. We're thrilled to have you join us!</p>
           
           <div class="details">
-            <p><strong>Event Type:</strong> ${eventTypeName}</p>
-            <p><strong>Preferred Location:</strong> ${formattedLocation}</p>
-            <p><strong>Date Registered:</strong> ${formattedDate}</p>
-            <p><strong>Booking Reference:</strong> SB-${Math.floor(100000 + Math.random() * 900000)}</p>
+            <p><strong>Event Type:</strong> {{event_type}}</p>
+            <p><strong>Preferred Location:</strong> {{location}}</p>
+            <p><strong>Date Registered:</strong> {{formatted_date}}</p>
+            <p><strong>Booking Reference:</strong> SB-{{booking_ref}}</p>
           </div>
           
-          <img class="event-image" src="https://images.unsplash.com/photo-1560439514-4e9645039924?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Event Image">
+          <img class="event-image" src="https://images.unsplash.com/photo-1560439514-4e9645039924?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Event Image">
           
           <p>We'll be in touch soon with more information about upcoming events that match your preferences. In the meantime, if you have any questions, please don't hesitate to contact us.</p>
           
-          <div class="payment-options">
-            <div class="payment-title">Payment Options</div>
-            <p>To secure your spot, please complete payment using one of the following methods:</p>
-            
-            <div class="payment-methods">
-              <div class="payment-method">
-                <div class="payment-icon">💳</div>
-                <div class="payment-label">Credit/Debit Card</div>
-                <div class="payment-info">Pay securely via our online portal</div>
-                <a href="https://stevenbartlett.info/payment" class="button" style="margin-top: 10px; font-size: 12px; padding: 8px 15px;">Pay Now</a>
-              </div>
-              
-              <div class="payment-method">
-                <div class="payment-icon">🏦</div>
-                <div class="payment-label">Bank Transfer</div>
-                <div class="payment-info">Use the bank details below</div>
-              </div>
-              
-              <div class="payment-method">
-                <div class="payment-icon">📱</div>
-                <div class="payment-label">Mobile Payment</div>
-                <div class="payment-info">Apple Pay, Google Pay, PayPal</div>
-                <a href="https://stevenbartlett.info/mobile-payment" class="button" style="margin-top: 10px; font-size: 12px; padding: 8px 15px;">Pay Mobile</a>
-              </div>
-              
-              <div class="payment-method">
-                <div class="payment-icon">₿</div>
-                <div class="payment-label">Cryptocurrency</div>
-                <div class="payment-info">BTC, ETH, and more</div>
-                <a href="https://stevenbartlett.info/crypto-payment" class="button" style="margin-top: 10px; font-size: 12px; padding: 8px 15px;">Crypto Details</a>
-              </div>
-            </div>
-            
-            <div class="bank-details">
-              <p><strong>Bank Transfer Details:</strong></p>
-              <p>Account Name: Steven Bartlett Events Ltd</p>
-              <p>Account Number: XXXX-XXXX-1234</p>
-              <p>Sort Code: XX-XX-XX</p>
-              <p>Reference: SB-${Math.floor(100000 + Math.random() * 900000)}</p>
-              <p>Bank: Example Bank PLC</p>
-              <p><em>Please include your reference number in all transfers</em></p>
-            </div>
-          </div>
-          
-          <p style="margin-top: 30px;">Best regards,<br>
-          The Steven Bartlett Team</p>
+          <p>Best regards,<br>The Steven Bartlett Team</p>
           
           <a href="https://stevenbartlett.info" class="button">Visit Our Website</a>
         </div>
         
         <div class="footer">
-          <p>© ${currentYear} Steven Bartlett. All rights reserved.</p>
+          <p>© {{current_year}} Steven Bartlett. All rights reserved.</p>
           <p>You're receiving this email because you registered for one of our events.</p>
           <p>For support, contact <a href="mailto:support@stevenbartlett.info" style="color: #d4af37;">support@stevenbartlett.info</a></p>
         </div>
@@ -232,49 +131,106 @@ const generateEmailTemplate = (
   `;
 };
 
-// Initialize EmailJS with public key
+// Initialize EmailJS with your public key
 export const initEmailJS = (): void => {
-  emailjs.init("_BtyukWyct1h9S7Hc");
+  emailjs.init("_BtyukWyct1h9S7Hc"); // Replace with your public key
   console.log("EmailJS initialized with public key");
 };
 
-// Send confirmation email using EmailJS
+// Send confirmation email to the client using EmailJS
 export const sendConfirmationEmail = async (
   email: string,
   name: string,
   location: string,
   eventType: string
 ): Promise<void> => {
+  if (!email) {
+    console.error("Recipient email address is empty. Cannot send confirmation email.");
+    throw new Error("Recipient email address is required.");
+  }
+
   const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
   const eventTypeName = formatEventType(eventType);
-  
+  const currentYear = new Date().getFullYear();
+  const formattedDate = format(new Date(), "MMMM d, yyyy");
+  const bookingRef = Math.floor(100000 + Math.random() * 900000); // Booking reference
+
+  // Prepare template params with dynamic values
+  const templateParams = {
+    to_email: email,             // Client email address
+    to_name: name,               // Recipient's name
+    from_name: "Steven Bartlett Team", // Sender name
+    location: formattedLocation, // Event location
+    event_type: eventTypeName,   // Event type
+    formatted_date: formattedDate, // Date of registration
+    booking_ref: bookingRef,     // Booking reference
+    reply_to: "support@stevenbartlett.info", // Reply-to email
+    current_year: currentYear,   // Current year
+    html_content: generateEmailTemplate(name, formattedLocation, eventType, formattedDate) // HTML content
+  };
+
   try {
-    // Create template parameters for EmailJS
+    const response = await emailjs.send(
+      "service_lx7m2wb", // Replace with your service ID
+      "template_zs9kpwf", // Confirmation email template ID
+      templateParams,
+      "_BtyukWyct1h9S7Hc" // Replace with your public key
+    );
+    console.log("Confirmation email sent successfully:", response);
+  } catch (error) {
+    console.error("Failed to send confirmation email:", error);
+    throw error;
+  }
+};
+
+// Send booking details to support using EmailJS
+export const sendSupportEmail = async (
+  name: string,
+  clientEmail: string,
+  bookingDetails: string,
+  eventType: string,
+  location: string
+): Promise<void> => {
+  const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
+  const eventTypeName = formatEventType(eventType);
+
+  try {
     const templateParams = {
-      to_email: email,
-      to_name: name,
-      from_name: "Steven Bartlett Team",
+      to_email: "support@stevenbartlett.info", // Support email address
+      to_name: "Support Team",
+      from_name: name,
       location: formattedLocation,
       event_type: eventTypeName,
-      message: `Thank you for registering for our ${eventTypeName} event!`,
-      reply_to: "support@stevenbartlett.info",
-      html_content: generateEmailTemplate(name, formattedLocation, eventType)
+      message: bookingDetails,
+      reply_to: clientEmail,
+      html_content: `<p>New booking registration for a ${eventTypeName} event.</p>
+                     <p>${bookingDetails}</p>`
     };
 
-    console.log("Sending email with EmailJS:", templateParams);
-    
-    // Send the email using EmailJS
     const response = await emailjs.send(
-      "service_juoltas", // Updated service ID
-      "template_default", // You'll need to create a template in EmailJS dashboard and replace this
+      "service_lx7m2wb", // Replace with your service ID
+      "template_knkhvfb", // Support email template ID
       templateParams,
-      "_BtyukWyct1h9S7Hc" // Public key
+      "_BtyukWyct1h9S7Hc" // Replace with your public key
     );
-
-    console.log("Email sent successfully:", response);
-    
+    console.log("Support email sent successfully:", response);
   } catch (error) {
-    console.error("Failed to send email:", error);
-    throw error; // Re-throw to let calling code handle the error
+    console.error("Failed to send support email:", error);
+    throw error;
   }
+};
+
+// Unified function to send both confirmation email and support email
+export const sendBookingEmails = async (
+  email: string,
+  name: string,
+  location: string,
+  eventType: string,
+  bookingDetails: string
+): Promise<void> => {
+  // Send Confirmation Email
+  await sendConfirmationEmail(email, name, location, eventType);
+
+  // Send Support Email
+  await sendSupportEmail(name, email, bookingDetails, eventType, location);
 };

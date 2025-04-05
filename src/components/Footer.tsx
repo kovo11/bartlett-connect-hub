@@ -83,8 +83,8 @@ const Footer = () => {
             <h4 className="font-bold mb-4">Contact</h4>
             <ul className="space-y-2">
               <li className="text-white/60">
-                <a href="mailto:events@stevenbartlett.com" className="hover:text-gold transition-colors">
-                  events@stevenbartlett.com
+                <a href="mailto:support@stevenbartlett.com" className="hover:text-gold transition-colors">
+                  support@stevenbartlett.com
                 </a>
               </li>
               <li className="text-white/60">
