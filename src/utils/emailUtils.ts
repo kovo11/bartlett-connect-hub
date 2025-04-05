@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import emailjs from 'emailjs-com';
 
 // Format event type for display
 const formatEventType = (eventType: string): string => {
@@ -22,7 +23,6 @@ const generateEmailTemplate = (
   location: string, 
   eventType: string
 ): string => {
-  // Format location and event type for display
   const formattedLocation = location.charAt(0).toUpperCase() + location.slice(1);
   const eventTypeName = formatEventType(eventType);
   const currentYear = new Date().getFullYear();
@@ -133,7 +133,13 @@ const generateEmailTemplate = (
   `;
 };
 
-// Send confirmation email using Formspree
+// Initialize EmailJS with public key
+export const initEmailJS = (): void => {
+  emailjs.init("_BtyukWyct1h9S7Hc");
+  console.log("EmailJS initialized with public key");
+};
+
+// Send confirmation email using EmailJS
 export const sendConfirmationEmail = async (
   email: string,
   name: string,
@@ -144,55 +150,31 @@ export const sendConfirmationEmail = async (
   const eventTypeName = formatEventType(eventType);
   
   try {
-    // Create an object with the form data
-    const formData = {
-      email,
-      name,
+    // Create template parameters for EmailJS
+    const templateParams = {
+      to_email: email,
+      to_name: name,
+      from_name: "Steven Bartlett Team",
       location: formattedLocation,
-      eventType: eventTypeName,
-      date: format(new Date(), "MMMM d, yyyy"),
-      message: `New registration for ${eventTypeName} event in ${formattedLocation}`,
-      _subject: `Registration for ${eventTypeName} Event`,
-      _template: "table", // Use Formspree's built-in table template for better formatting
+      event_type: eventTypeName,
+      message: `Thank you for registering for our ${eventTypeName} event!`,
+      reply_to: "noreply@stevenbartlett.info",
     };
 
-    // For development/demo purposes, we'll log the data and simulate success
-    console.log("Form submission data:", formData);
+    console.log("Sending email with EmailJS:", templateParams);
     
-    // In a real implementation, we would send to Formspree
-    // Uncomment this code and replace "YOUR_FORMSPREE_ID" with your actual ID
-    /*
-    const response = await fetch("https://formspree.io/f/YOUR_FORMSPREE_ID", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    // Send the email using EmailJS
+    const response = await emailjs.send(
+      "service_default", // You'll need to create a service in EmailJS dashboard and replace this
+      "template_default", // You'll need to create a template in EmailJS dashboard and replace this
+      templateParams,
+      "_BtyukWyct1h9S7Hc" // Public key
+    );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to send email");
-    }
-    */
+    console.log("Email sent successfully:", response);
     
-    // For demo purposes, simulate a successful submission
-    // In a production environment, remove this and uncomment the fetch code above
-    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network latency
-    
-    // Log success message for development
-    console.log("Form submitted successfully (simulated)");
-    
-    // We're not throwing any errors, so the function will complete successfully
-
   } catch (error) {
     console.error("Failed to send email:", error);
     throw error; // Re-throw to let calling code handle the error
   }
-};
-
-// For backward compatibility, keep the initEmailJS function as a no-op
-export const initEmailJS = (): void => {
-  // This function now does nothing as we're not using EmailJS
-  console.log("Email service initialized");
 };

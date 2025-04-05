@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -22,22 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { sendConfirmationEmail, initEmailJS } from "@/utils/emailUtils";
-
-// Define the form schema
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Name is required" }),
-  email: z.string().email({ message: "Valid email is required" }),
-  location: z.string().min(1, { message: "Please select a location" }),
-  eventType: z.string().min(1, { message: "Please select an event type" }),
-});
-
-export type FormValues = z.infer<typeof formSchema>;
+import { formSchema, FormValues } from "./types";
 
 const RegistrationForm = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    // Initialize email service when component mounts
+    // Initialize EmailJS when component mounts
     initEmailJS();
   }, []);
   
@@ -62,7 +52,7 @@ const RegistrationForm = () => {
         duration: 3000,
       });
       
-      // Send confirmation email using the email service
+      // Send confirmation email using EmailJS
       await sendConfirmationEmail(data.email, data.name, data.location, data.eventType);
       
       // Success toast
