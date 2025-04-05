@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -270,7 +269,7 @@ const BookingForm = ({
               <FormItem>
                 <FormLabel>Full Name*</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your full name" {...field} />
+                  <Input placeholder="Enter your full name" className="text-black" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -285,7 +284,7 @@ const BookingForm = ({
                 <FormItem>
                   <FormLabel>Email Address*</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
+                    <Input type="email" placeholder="you@example.com" className="text-black" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -299,7 +298,7 @@ const BookingForm = ({
                 <FormItem>
                   <FormLabel>Phone Number*</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your contact number" {...field} />
+                    <Input placeholder="Your contact number" className="text-black" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -315,7 +314,7 @@ const BookingForm = ({
                 <FormItem>
                   <FormLabel>Company/Organization</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your company name (optional)" {...field} />
+                    <Input placeholder="Your company name (optional)" className="text-black" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -329,7 +328,7 @@ const BookingForm = ({
                 <FormItem>
                   <FormLabel>Number of Attendees*</FormLabel>
                   <FormControl>
-                    <Input type="number" min="1" placeholder="1" {...field} />
+                    <Input type="number" min="1" placeholder="1" className="text-black" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -394,7 +393,7 @@ const BookingForm = ({
                 <FormControl>
                   <Textarea
                     placeholder="Please let us know about any dietary requirements or allergies"
-                    className="resize-none"
+                    className="resize-none text-black"
                     {...field}
                   />
                 </FormControl>
@@ -412,7 +411,7 @@ const BookingForm = ({
                 <FormControl>
                   <Textarea
                     placeholder="Any specific topics or questions you'd like to discuss?"
-                    className="resize-none"
+                    className="resize-none text-black"
                     {...field}
                   />
                 </FormControl>
