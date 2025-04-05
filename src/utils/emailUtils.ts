@@ -132,10 +132,10 @@ const generateEmailTemplate = (
         <p>To proceed, simply <strong>reply to this email</strong> with your preferred payment method and let us know if you have any requests or questions.</p>
       </div>
 
-      <img class="event-image" src="https://images.unsplash.com/photo-1560439514-4e9645039924?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Event Image" />
+      <p>We recommend that you complete your payment as soon as possible to secure your spot, as spaces are limited.</p>
 
       <p>We'll be in touch soon with more information about upcoming events that match your preferences. In the meantime, if you have any questions, please don't hesitate to contact us.</p>
-      <p>Best regards,<br>The Steven Bartlett Team</
+      <p>Best regards,<br>The Steven Bartlett</
   `;
 };
 
