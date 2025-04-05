@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,21 +54,32 @@ const Registration = () => {
     console.log("Form submitted:", data);
     
     try {
+      // Show loading toast
+      toast({
+        title: "Submitting registration...",
+        description: "Please wait while we process your registration.",
+        duration: 3000,
+      });
+      
       // Send confirmation email using the email service
       await sendConfirmationEmail(data.email, data.name, data.location, data.eventType);
       
+      // Success toast
       toast({
         title: "Registration successful!",
         description: "Your registration has been submitted. We'll be in touch soon.",
         duration: 5000,
       });
       
+      // Reset the form
       form.reset();
     } catch (error) {
       console.error("Error processing submission:", error);
+      
+      // Error toast
       toast({
         title: "Something went wrong",
-        description: "Please try again later.",
+        description: "We couldn't process your registration. Please try again later.",
         variant: "destructive",
         duration: 5000,
       });
