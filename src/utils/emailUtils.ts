@@ -30,104 +30,112 @@ const generateEmailTemplate = (
   
   // Return HTML with placeholders for dynamic content
   return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Registration Confirmation</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          background-color: #f4f4f4;
-          margin: 0;
-          padding: 0;
-        }
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-          background-color: #ffffff;
-        }
-        .header {
-          background-color: #1a1a1a;
-          color: #fff;
-          padding: 20px;
-          text-align: center;
-        }
-        .content {
-          padding: 30px;
-        }
-        .footer {
-          background-color: #1a1a1a;
-          color: #aaa;
-          padding: 15px;
-          text-align: center;
-          font-size: 12px;
-        }
-        .highlight {
-          color: #d4af37;
-          font-weight: bold;
-        }
-        .button {
-          display: inline-block;
-          background-color: #d4af37;
-          color: #1a1a1a;
-          text-decoration: none;
-          padding: 10px 20px;
-          border-radius: 5px;
-          font-weight: bold;
-          margin-top: 20px;
-        }
-        .event-image {
-          width: 100%;
-          height: auto;
-          margin: 20px 0;
-        }
-        .details {
-          background-color: #f9f9f9;
-          padding: 15px;
-          border-left: 4px solid #d4af37;
-          margin: 20px 0;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Thank You for Registering!</h1>
-        </div>
-        
-        <div class="content">
-          <p>Hello <span class="highlight">{{to_name}}</span>,</p>
-          
-          <p>Thank you for registering your interest in our upcoming <span class="highlight">{{event_type}}</span> event. We're thrilled to have you join us!</p>
-          
-          <div class="details">
-            <p><strong>Event Type:</strong> {{event_type}}</p>
-            <p><strong>Preferred Location:</strong> {{location}}</p>
-            <p><strong>Date Registered:</strong> {{formatted_date}}</p>
-            <p><strong>Booking Reference:</strong> SB-{{booking_ref}}</p>
-          </div>
-          
-          <img class="event-image" src="https://images.unsplash.com/photo-1560439514-4e9645039924?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Event Image">
-          
-          <p>We'll be in touch soon with more information about upcoming events that match your preferences. In the meantime, if you have any questions, please don't hesitate to contact us.</p>
-          
-          <p>Best regards,<br>The Steven Bartlett Team</p>
-          
-          <a href="https://stevenbartlett.info" class="button">Visit Our Website</a>
-        </div>
-        
-        <div class="footer">
-          <p>© {{current_year}} Steven Bartlett. All rights reserved.</p>
-          <p>You're receiving this email because you registered for one of our events.</p>
-          <p>For support, contact <a href="mailto:support@stevenbartlett.info" style="color: #d4af37;">support@stevenbartlett.info</a></p>
-        </div>
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+    .header {
+      background-color: #1a1a1a;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    .content {
+      padding: 30px;
+    }
+    .footer {
+      background-color: #1a1a1a;
+      color: #aaa;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .highlight {
+      color: #d4af37;
+      font-weight: bold;
+    }
+    .button {
+      display: inline-block;
+      background-color: #d4af37;
+      color: #1a1a1a;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .event-image {
+      width: 100%;
+      height: auto;
+      margin: 20px 0;
+    }
+    .details {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-left: 4px solid #d4af37;
+      margin: 20px 0;
+    }
+    .payment-section {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin-top: 30px;
+    }
+    .bold-warning {
+      font-weight: bold;
+      color: #c00;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Thank You for Registering!</h1>
+    </div>
+    <div class="content">
+      <p>Hello <span class="highlight">{{to_name}}</span>,</p>
+      <p>Thank you for registering your interest in our upcoming <span class="highlight">{{event_type}}</span> event. We're thrilled to have you join us!</p>
+
+      <div class="details">
+        <p><strong>Event Type:</strong> {{event_type}}</p>
+        <p><strong>Preferred Location:</strong> {{location}}</p>
+        <p><strong>Date Registered:</strong> {{formatted_date}}</p>
+        <p><strong>Booking Reference:</strong> SB-{{booking_ref}}</p>
+        <p><strong>Price:</strong> <span class="highlight">{{eventPrice}}</span> per person</p>
       </div>
-    </body>
-    </html>
+
+      <div class="payment-section">
+        <p class="bold-warning">⚠️ Your booking is not yet confirmed – payment is pending.</p>
+        <p>Please choose your preferred payment method from the options below:</p>
+        <ul>
+          <li>💳 <strong>Credit/Debit Card</strong></li>
+          <li>🏦 <strong>Bank Transfer</strong></li>
+          <li>💰 <strong>Cryptocurrency (USDT, LTC, BTC)</strong></li>
+        </ul>
+        <p>To proceed, simply <strong>reply to this email</strong> with your preferred payment method and let us know if you have any requests or questions.</p>
+      </div>
+
+      <img class="event-image" src="https://images.unsplash.com/photo-1560439514-4e9645039924?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Event Image" />
+
+      <p>We'll be in touch soon with more information about upcoming events that match your preferences. In the meantime, if you have any questions, please don't hesitate to contact us.</p>
+      <p>Best regards,<br>The Steven Bartlett Team</
   `;
 };
 
