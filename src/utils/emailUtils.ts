@@ -1,3 +1,4 @@
+
 import { format } from "date-fns";
 import emailjs from 'emailjs-com';
 
@@ -158,14 +159,14 @@ export const sendConfirmationEmail = async (
       location: formattedLocation,
       event_type: eventTypeName,
       message: `Thank you for registering for our ${eventTypeName} event!`,
-      reply_to: "noreply@stevenbartlett.info",
+      reply_to: "support@stevenbartlett.info",
     };
 
     console.log("Sending email with EmailJS:", templateParams);
     
     // Send the email using EmailJS
     const response = await emailjs.send(
-      "service_default", // You'll need to create a service in EmailJS dashboard and replace this
+      "service_juoltas", // Updated service ID
       "template_default", // You'll need to create a template in EmailJS dashboard and replace this
       templateParams,
       "_BtyukWyct1h9S7Hc" // Public key
