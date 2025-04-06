@@ -1,3 +1,4 @@
+
 import { format } from "date-fns";
 import emailjs from "emailjs-com";
 
@@ -30,20 +31,20 @@ const generateEmailTemplate = (
   
   // Return HTML with placeholders for dynamic content
   return `
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Registration Confirmation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exclusive Events with Steven Bartlett</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       line-height: 1.6;
       color: #333;
-      background-color: #f4f4f4;
       margin: 0;
       padding: 0;
+      background-color: #f9f9f9;
     }
     .container {
       max-width: 600px;
@@ -53,89 +54,118 @@ const generateEmailTemplate = (
     .header {
       background-color: #1a1a1a;
       color: #fff;
-      padding: 20px;
+      padding: 30px 20px;
       text-align: center;
+    }
+    .gold-text {
+      color: #d4af37;
     }
     .content {
       padding: 30px;
     }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(to right, #d4af37, #aa8e2b);
+      color: #1a1a1a;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 14px 30px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .highlight-box {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      padding: 20px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
     .footer {
       background-color: #1a1a1a;
       color: #aaa;
-      padding: 15px;
+      padding: 20px;
       text-align: center;
       font-size: 12px;
     }
-    .highlight {
-      color: #d4af37;
-      font-weight: bold;
+    .social-links {
+      margin: 15px 0;
     }
-    .button {
-      display: inline-block;
-      background-color: #d4af37;
-      color: #1a1a1a;
+    .social-links a {
+      margin: 0 10px;
       text-decoration: none;
-      padding: 10px 20px;
+    }
+    .image-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .image-container img {
+      max-width: 100%;
       border-radius: 5px;
-      font-weight: bold;
-      margin-top: 20px;
     }
-    .event-image {
-      width: 100%;
-      height: auto;
+    .gold-divider {
+      height: 3px;
+      background: linear-gradient(to right, #d4af37, #aa8e2b);
+      border: none;
       margin: 20px 0;
     }
-    .details {
-      background-color: #f9f9f9;
-      padding: 15px;
-      border-left: 4px solid #d4af37;
-      margin: 20px 0;
-    }
-    .payment-section {
-      background-color: #fff3cd;
-      border-left: 4px solid #ffc107;
-      padding: 15px;
-      margin-top: 30px;
-    }
-    .bold-warning {
-      font-weight: bold;
-      color: #c00;
-      font-size: 16px;
+    @media screen and (max-width: 480px) {
+      .content {
+        padding: 20px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>Thank You for Registering!</h1>
+      <h1>Exclusive <span class="gold-text">Invitation</span></h1>
+      <p>Meet Steven Bartlett in ${currentYear}</p>
     </div>
+    
     <div class="content">
-      <p>Hello <span class="highlight">{{to_name}}</span>,</p>
-      <p>Thank you for registering your interest in our upcoming <span class="highlight">{{event_type}}</span> event. We're thrilled to have you join us!</p>
-
-      <div class="details">
-        <p><strong>Event Type:</strong> {{event_type}}</p>
-        <p><strong>Preferred Location:</strong> {{location}}</p>
-        <p><strong>Date Registered:</strong> {{formatted_date}}</p>
-        <p><strong>Booking Reference:</strong> SB-{{booking_ref}}</p>
-        <p><strong>Price:</strong> <span class="highlight">{{eventPrice}}</span> per person</p>
+      <h2>Dear ${name},</h2>
+      
+      <p>Thank you for registering your interest in our upcoming <strong>${eventTypeName}</strong> event. We're thrilled to have you join us!</p>
+      
+      <div class="highlight-box">
+        <h3 style="color: #d4af37;">Event Details</h3>
+        <p><strong>Event Type:</strong> ${eventTypeName}</p>
+        <p><strong>Preferred Location:</strong> ${formattedLocation}</p>
+        <p><strong>Date Registered:</strong> ${formattedDate}</p>
+        <p><strong>Booking Reference:</strong> SB-${Math.floor(100000 + Math.random() * 900000)}</p>
+        <p><strong style="color: #d4af37;">Spaces are strictly limited to ensure quality interaction.</strong></p>
       </div>
 
-      <div class="payment-section">
-        <p class="bold-warning">⚠️ Your booking is not yet confirmed – payment is pending.</p>
-        <p>Please choose your preferred payment method from the options below:</p>
-        <ul>
-          <li>💳 <strong>Credit/Debit Card</strong></li>
-          <li>🏦 <strong>Bank Transfer</strong></li>
-          <li>💰 <strong>Cryptocurrency (USDT, LTC, BTC)</strong></li>
-        </ul>
-        <p>To proceed, simply <strong>reply to this email</strong> with your preferred payment method and let us know if you have any requests or questions.</p>
+      <p>For complete details on upcoming events, locations, dates, and to secure your spot:</p>
+      
+      <div style="text-align: center;">
+        <a href="https://www.stevenbartlett.info" class="cta-button">VISIT OUR WEBSITE</a>
       </div>
-
-      <p>We recommend that you complete your payment as soon as possible to secure your spot, as spaces are limited.</p>
-
-      <p>We'll be in touch soon with more information about upcoming events that match your preferences. In the meantime, if you have any questions, please don't hesitate to contact us.</p>
-      <p>Best regards,<br>The Steven Bartlett</
+      
+      <hr class="gold-divider">
+      
+      <p style="text-align: center;">Don't miss this opportunity to meet Steven and connect with like-minded entrepreneurs.</p>
+      
+      <p>Best regards,<br>The Steven Bartlett Team</p>
+    </div>
+    
+    <div class="footer">
+      <p>© ${currentYear} Steven Bartlett Events</p>
+      <div class="social-links">
+        <a href="https://twitter.com" style="color: #aaa;">Twitter</a>
+        <a href="https://instagram.com" style="color: #aaa;">Instagram</a>
+        <a href="https://linkedin.com" style="color: #aaa;">LinkedIn</a>
+      </div>
+      <p>
+        <small>For any questions: <a href="mailto:support@stevenbartlett.info" style="color: #aaa;">support@stevenbartlett.info</a></small>
+      </p>
+      <p>
+        <small>If you wish to unsubscribe, <a href="#" style="color: #aaa;">click here</a></small>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
   `;
 };
 
