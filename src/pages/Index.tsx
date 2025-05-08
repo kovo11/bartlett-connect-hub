@@ -44,7 +44,7 @@ const Index = () => {
       <Events />
       
       {/* Vimeo Video Section */}
-      <section id="featured-video" className="relative py-16 md:py-24 bg-dark">
+      <section id="featured-video" className="relative py-16 md:py-24 bg-dark scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 reveal">
             <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
