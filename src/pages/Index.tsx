@@ -60,13 +60,13 @@ const Index = () => {
               <AspectRatio ratio={16/9}>
                 <iframe 
                   title="Steven Bartlett Featured Video" 
-                  src="https://player.vimeo.com/video/1082402043?h=c4a03a184d&autoplay=1&loop=1&background=1" 
+                  src="https://player.vimeo.com/video/1082402043?h=c4a03a184d&autoplay=1&loop=1&muted=0&playsinline=1" 
                   width="100%" 
                   height="100%" 
                   frameBorder="0"
                   allowFullScreen
                   className="w-full h-full"
-                  allow="autoplay; fullscreen"
+                  allow="autoplay; fullscreen; clipboard-write"
                 ></iframe>
               </AspectRatio>
             </div>
