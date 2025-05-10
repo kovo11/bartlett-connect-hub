@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, MapPin } from "lucide-react";
@@ -20,12 +19,12 @@ import {
 } from "@/components/ui/dialog";
 import BookingForm from "./BookingForm";
 
-// Event data - updated dates to start from May 2025
+// Event data - updated to start from October 2025
 const allEvents = [
   {
     id: 1,
     title: "London VIP Meet & Greet",
-    date: "May 15, 2025",
+    date: "October 15, 2025",
     time: "6:00 PM - 9:00 PM",
     location: "The Savoy, London",
     spots: "10 spots left",
@@ -35,7 +34,7 @@ const allEvents = [
   {
     id: 2,
     title: "Manchester Exclusive Dinner",
-    date: "June 10, 2025",
+    date: "November 10, 2025",
     time: "7:00 PM - 10:30 PM",
     location: "The Ivy, Manchester",
     spots: "5 spots left",
@@ -45,7 +44,7 @@ const allEvents = [
   {
     id: 3,
     title: "New York CEO Breakfast",
-    date: "July 5, 2025",
+    date: "December 5, 2025",
     time: "8:30 AM - 11:00 AM",
     location: "The Plaza Hotel, NYC",
     spots: "15 spots left",
@@ -55,7 +54,7 @@ const allEvents = [
   {
     id: 4,
     title: "Dubai Business Masterclass",
-    date: "August 25, 2025",
+    date: "January 25, 2026",
     time: "10:00 AM - 2:00 PM",
     location: "Burj Al Arab, Dubai",
     spots: "8 spots left",
@@ -65,7 +64,7 @@ const allEvents = [
   {
     id: 5,
     title: "Paris Networking Evening",
-    date: "September 12, 2025",
+    date: "February 12, 2026",
     time: "7:00 PM - 10:00 PM",
     location: "Four Seasons Hotel George V, Paris",
     spots: "12 spots left",
@@ -75,7 +74,7 @@ const allEvents = [
   {
     id: 6,
     title: "Berlin Entrepreneurship Workshop",
-    date: "October 8, 2025",
+    date: "March 8, 2026",
     time: "9:00 AM - 4:00 PM",
     location: "Hotel Adlon Kempinski, Berlin",
     spots: "20 spots left",
