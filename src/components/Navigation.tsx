@@ -18,12 +18,12 @@ const Navigation = () => {
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  // All events data shared with the Events component - updated to start later
+  // All events data shared with the Events component - updated to start from June 2025
   const allEvents = [
     {
       id: 1,
       title: "London VIP Meet & Greet",
-      date: "October 15, 2025",
+      date: "June 15, 2025",
       time: "6:00 PM - 9:00 PM",
       location: "The Savoy, London",
       spots: "10 spots left",
@@ -33,7 +33,7 @@ const Navigation = () => {
     {
       id: 2,
       title: "Manchester Exclusive Dinner",
-      date: "November 10, 2025",
+      date: "July 10, 2025",
       time: "7:00 PM - 10:30 PM",
       location: "The Ivy, Manchester",
       spots: "5 spots left",
@@ -43,7 +43,7 @@ const Navigation = () => {
     {
       id: 3,
       title: "New York CEO Breakfast",
-      date: "December 5, 2025",
+      date: "August 5, 2025",
       time: "8:30 AM - 11:00 AM",
       location: "The Plaza Hotel, NYC",
       spots: "15 spots left",
@@ -53,7 +53,7 @@ const Navigation = () => {
     {
       id: 4,
       title: "Dubai Business Masterclass",
-      date: "January 25, 2026",
+      date: "September 25, 2025",
       time: "10:00 AM - 2:00 PM",
       location: "Burj Al Arab, Dubai",
       spots: "8 spots left",
@@ -63,7 +63,7 @@ const Navigation = () => {
     {
       id: 5,
       title: "Paris Networking Evening",
-      date: "February 12, 2026",
+      date: "October 12, 2025",
       time: "7:00 PM - 10:00 PM",
       location: "Four Seasons Hotel George V, Paris",
       spots: "12 spots left",
@@ -73,7 +73,7 @@ const Navigation = () => {
     {
       id: 6,
       title: "Berlin Entrepreneurship Workshop",
-      date: "March 8, 2026",
+      date: "November 8, 2025",
       time: "9:00 AM - 4:00 PM",
       location: "Hotel Adlon Kempinski, Berlin",
       spots: "20 spots left",
