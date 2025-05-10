@@ -67,8 +67,6 @@ const Index = () => {
                   allowFullScreen
                   className="w-full h-full"
                   allow="autoplay; fullscreen; clipboard-write; picture-in-picture"
-                  // The correct React attribute for HTML playsInline is playsInline with camel case
-                  playsInline={true}
                 ></iframe>
               </AspectRatio>
             </div>
